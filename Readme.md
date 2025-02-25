@@ -1,7 +1,7 @@
 # Проект «Большое путешествие»
 
-* Студент: [David Matt](https://up.htmlacademy.ru/ecmascript-individual/2/user/2402257).
-* Наставник: `Неизвестно`.
+- Студент: [David Matt](https://up.htmlacademy.ru/ecmascript-individual/2/user/2402257).
+- Наставник: `Неизвестноooooooo`.
 
 ---
 
