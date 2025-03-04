@@ -165,7 +165,7 @@ function createAddPointTemplate() {
             </li>`;
 }
 
-export default class AddPointView {
+export default class AddEventPointView {
   getTemplate() {
     return createAddPointTemplate();
   }
