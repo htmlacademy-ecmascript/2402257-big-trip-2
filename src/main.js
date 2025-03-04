@@ -13,3 +13,4 @@ render(new FilterView(), filtersContainer);
 render(new SortView(), eventsContainer);
 eventPresenter.init();
 //hello
+// hello
