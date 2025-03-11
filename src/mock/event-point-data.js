@@ -3,15 +3,17 @@ import { getRandomElement } from '../util';
 const mockEventPoint = [
   {
     type: 'taxi',
+    id: 1,
     name: 'amsterdam',
-    startTime: new Date('2025-02-12T13:00'),
-    endTime: new Date('2025-02-12T13:10'),
+    startTime: new Date('2025-06-12T13:00'),
+    endTime: new Date('2025-06-12T13:10'),
     price: '995',
     isFavorite: true,
     offers: [1, 3, 2],
   },
   {
     type: 'flight',
+    id: 2,
     name: 'israel',
     startTime: new Date('2025-03-10T10:00'),
     endTime: new Date('2025-03-10T15:00'),
@@ -21,6 +23,7 @@ const mockEventPoint = [
   },
   {
     type: 'train',
+    id: 3,
     name: 'geneva',
     startTime: new Date('2025-04-11T18:00'),
     endTime: new Date('2025-04-11T20:10'),
@@ -30,9 +33,10 @@ const mockEventPoint = [
   },
   {
     type: 'check-in',
+    id: 4,
     name: 'moscow',
-    startTime: new Date('2025-06-18T11:30'),
-    endTime: new Date('2025-06-18T15:50'),
+    startTime: new Date('2025-07-17T11:30'),
+    endTime: new Date('2025-07-18T15:50'),
     price: '1067',
     isFavorite: true,
     offers: [],

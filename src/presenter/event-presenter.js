@@ -14,19 +14,61 @@ export default class EventPresenter {
 
   init() {
     this.eventPoints = [...this.pointModel.getPoints()];
-    render(this.eventListComponent, this.listContainer);
-    render(new EditPointView(), this.eventListComponent.getElement());
-    render(new AddPointView(), this.eventListComponent.getElement());
 
-    for (let i = 0; i < this.eventPoints.length; i++) {
-      //console.log(this.eventPoints[i].type); проверяю тип итерируемой точки
-      //console.log(this.eventPoints[i].offers); проверяю какие оферы соответсвуют данной точке
-      const eventOffers = [...this.pointModel.getOffersById(this.eventPoints[i].type, this.eventPoints[i].offers)];
-      const eventDestinations = [...this.pointModel.getDestinationsByName(this.eventPoints[i].name)];
-      render(
-        new EventPointView({ point: this.eventPoints[i], offers: eventOffers, destinations: eventDestinations }),
-        this.eventListComponent.getElement()
-      );
-    }
+    render(this.eventListComponent, this.listContainer);
+
+    this.renderEditPointView(this.eventPoints[0]);
+
+    this.renderAddPointView(this.eventPoints[1]);
+
+    this.eventPoints.forEach((point) => this.renderEventPointView(point));
+  }
+
+  renderEditPointView(point) {
+    const eventOffersByType = this.pointModel.getOffersByType(point.type);
+    const eventCheckedOffers = this.pointModel.getOffersById(point.type, point.offers);
+    const eventDestination = this.pointModel.getDestinationsByName(point.name);
+
+    render(
+      new EditPointView({
+        point: point,
+        allOffers: eventOffersByType,
+        checkedOffers: eventCheckedOffers,
+        destinationInfo: eventDestination,
+        allPoints: this.eventPoints,
+      }),
+      this.eventListComponent.getElement()
+    );
+  }
+
+  renderAddPointView(point) {
+    const eventOffersByType = this.pointModel.getOffersByType(point.type);
+    const eventCheckedOffers = this.pointModel.getOffersById(point.type, point.offers);
+    const eventDestination = this.pointModel.getDestinationsByName(point.name);
+
+    render(
+      new AddPointView({
+        point: point,
+        allOffers: eventOffersByType,
+        checkedOffers: eventCheckedOffers,
+        destinationInfo: eventDestination,
+        allPoints: this.eventPoints,
+      }),
+      this.eventListComponent.getElement()
+    );
+  }
+
+  renderEventPointView(point) {
+    const eventOffers = [...this.pointModel.getOffersById(point.type, point.offers)];
+    const eventDestinations = { ...this.pointModel.getDestinationsByName(point.name) };
+
+    render(
+      new EventPointView({
+        point: point,
+        offers: eventOffers,
+        destinations: eventDestinations,
+      }),
+      this.eventListComponent.getElement()
+    );
   }
 }
