@@ -1,8 +1,8 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
-import LocalizedFormat from 'dayjs/plugin/LocalizedFormat';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
 
-dayjs.extend(LocalizedFormat);
+dayjs.extend(localizedFormat);
 dayjs.extend(duration);
 
 const DATE_FORMAT_POINT = 'D MMMM';
