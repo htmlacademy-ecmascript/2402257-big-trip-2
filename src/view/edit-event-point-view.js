@@ -173,8 +173,7 @@ function createEditPointTemplate(point, allOffers, checkedOffers, destinationInf
             </li>`;
 }
 
-
-export default class EditPointView {
+export default class EditEventPointView {
 
   constructor({point, allOffers, checkedOffers, destinationInfo, allPoints }){
     this.allOffers = allOffers;
@@ -184,8 +183,6 @@ export default class EditPointView {
     this.allPoints = allPoints;
   }
 
-
-export default class EditEventPointView {
   getTemplate() {
     return createEditPointTemplate(this.point, this.allOffers, this.checkedOffers, this.destinationInfo, this.allPoints);
   }
