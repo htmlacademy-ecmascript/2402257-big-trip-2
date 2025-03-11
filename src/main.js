@@ -1,10 +1,10 @@
-import FilterButtonsView from './view/filter-view.js';
-import SortButtonsView from './view/sort-view.js';
+import FilterView from './view/filter-view.js';
+import SortView from './view/sort-view.js';
 import EventPresenter from './presenter/event-presenter.js';
 import PointsModel from './model/events-model.js';
 import { render } from './render.js';
 
-const filtersButtonsContainer = document.querySelector(
+const filtersContainer = document.querySelector(
   '.trip-controls__filters'
 );
 const pointModel = new PointsModel();
@@ -14,6 +14,8 @@ const eventPresenter = new EventPresenter({
   pointModel,
 });
 
-render(new FilterButtonsView(), filtersButtonsContainer);
-render(new SortButtonsView(), eventsContainer);
+render(new FilterView(), filtersContainer);
+render(new SortView(), eventsContainer);
 eventPresenter.init();
+//hello
+// hello

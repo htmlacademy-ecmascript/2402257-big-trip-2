@@ -171,6 +171,7 @@ function createAddPointTemplate(point, allOffers, checkedOffers, destinationInfo
 
 export default class AddEventPointView {
 
+
   constructor({point, allOffers, checkedOffers, destinationInfo, allPoints }){
     this.allOffers = allOffers;
     this.checkedOffers = checkedOffers;
