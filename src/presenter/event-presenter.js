@@ -2,32 +2,37 @@ import AddPointView from '../view/add-event-point-view';
 import EditPointView from '../view/edit-event-point-view';
 import EventListView from '../view/event-list-view';
 import EventPointView from '../view/event-point-view';
-import { render } from '../render.js';
+import { render, replace } from '../framework/render';
 
 export default class EventPresenter {
-  eventListComponent = new EventListView();
+  #listContainer = null;
+  #pointModel = null;
+  #eventListComponent = new EventListView();
+  #eventPoints = [];
 
   constructor({ listContainer, pointModel }) {
-    this.listContainer = listContainer;
-    this.pointModel = pointModel;
+    this.#listContainer = listContainer;
+    this.#pointModel = pointModel;
   }
 
   init() {
-    this.eventPoints = [...this.pointModel.getPoints()];
+    this.#eventPoints = [...this.#pointModel.getPoints()];
 
-    render(this.eventListComponent, this.listContainer);
+    render(this.#eventListComponent, this.#listContainer);
 
-    this.renderEditPointView(this.eventPoints[0]);
+    //this.#renderEditPointView(this.#eventPoints[0]);
 
-    this.renderAddPointView(this.eventPoints[1]);
+    // this.#renderAddPointView(this.#eventPoints[1]);
 
-    this.eventPoints.forEach((point) => this.renderEventPointView(point));
+    for (let i = 0; i < this.#eventPoints.length; i++){
+      this.#renderEventPointView(this.#eventPoints[i]);
+    }
   }
 
-  renderEditPointView(point) {
-    const eventOffersByType = this.pointModel.getOffersByType(point.type);
-    const eventCheckedOffers = this.pointModel.getOffersById(point.type, point.offers);
-    const eventDestination = this.pointModel.getDestinationsByName(point.name);
+  #renderEditPointView(point) {
+    const eventOffersByType = this.#pointModel.getOffersByType(point.type);
+    const eventCheckedOffers = this.#pointModel.getOffersById(point.type, point.offers);
+    const eventDestination = this.#pointModel.getDestinationsByName(point.name);
 
     render(
       new EditPointView({
@@ -35,16 +40,16 @@ export default class EventPresenter {
         allOffers: eventOffersByType,
         checkedOffers: eventCheckedOffers,
         destinationInfo: eventDestination,
-        allPoints: this.eventPoints,
+        allPoints: this.#eventPoints,
       }),
-      this.eventListComponent.getElement()
+      this.#eventListComponent.element
     );
   }
 
-  renderAddPointView(point) {
-    const eventOffersByType = this.pointModel.getOffersByType(point.type);
-    const eventCheckedOffers = this.pointModel.getOffersById(point.type, point.offers);
-    const eventDestination = this.pointModel.getDestinationsByName(point.name);
+  #renderAddPointView(point) {
+    const eventOffersByType = this.#pointModel.getOffersByType(point.type);
+    const eventCheckedOffers = this.#pointModel.getOffersById(point.type, point.offers);
+    const eventDestination = this.#pointModel.getDestinationsByName(point.name);
 
     render(
       new AddPointView({
@@ -52,23 +57,28 @@ export default class EventPresenter {
         allOffers: eventOffersByType,
         checkedOffers: eventCheckedOffers,
         destinationInfo: eventDestination,
-        allPoints: this.eventPoints,
+        allPoints: this.#eventPoints,
       }),
-      this.eventListComponent.getElement()
+      this.#eventListComponent.element
     );
   }
 
-  renderEventPointView(point) {
-    const eventOffers = [...this.pointModel.getOffersById(point.type, point.offers)];
-    const eventDestinations = { ...this.pointModel.getDestinationsByName(point.name) };
+  #renderEventPointView(point) {
+    const eventOffers = [...this.#pointModel.getOffersById(point.type, point.offers)];
+    const eventDestinations = { ...this.#pointModel.getDestinationsByName(point.name) };
 
     render(
       new EventPointView({
         point: point,
         offers: eventOffers,
         destinations: eventDestinations,
+        onClick: this.#handleRollUpButtonClick
       }),
-      this.eventListComponent.getElement()
+      this.#eventListComponent.element
     );
+  }
+
+  #handleRollUpButtonClick(){
+    replace();
   }
 }

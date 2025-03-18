@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { capitalizeFirstLetter, localizeDateFormat } from '../util.js';
 
 const checked = 'checked';
@@ -169,9 +169,9 @@ function createAddPointTemplate(point, allOffers, checkedOffers, destinationInfo
             </li>`;
 }
 
-export default class AddEventPointView {
-
+export default class AddEventPointView extends AbstractView{
   constructor({point, allOffers, checkedOffers, destinationInfo, allPoints }){
+    super();
     this.allOffers = allOffers;
     this.checkedOffers = checkedOffers;
     this.destinationInfo = destinationInfo;
@@ -179,19 +179,7 @@ export default class AddEventPointView {
     this.allPoints = allPoints;
   }
 
-  getTemplate() {
+  get template() {
     return createAddPointTemplate(this.point, this.allOffers, this.checkedOffers, this.destinationInfo, this.allPoints);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }
