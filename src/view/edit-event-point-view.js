@@ -1,5 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { capitalizeFirstLetter, localizeDateFormat } from '../util.js';
+import { EVENT_TYPES } from '../const.js';
 
 const checked = 'checked';
 const unchecked = 'unchecked';
@@ -44,8 +45,8 @@ function initDestinationListOptions(allPoints){
     .join('');
 }
 
-function initEventTypesItemTemplate(allPoints){
-  const allTypes = [...new Set(allPoints.map((currentPoint) => currentPoint.type))];
+function initEventTypesItemTemplate(){
+  const allTypes = EVENT_TYPES;
 
   if (!allTypes || allTypes.length === 0) {
     return '';
@@ -115,7 +116,7 @@ function createEditPointTemplate(point, allOffers, checkedOffers, destinationInf
                     <div class="event__type-list">
                       <fieldset class="event__type-group">
                         <legend class="visually-hidden">Event type</legend>
-                          ${initEventTypesItemTemplate(allPoints)}
+                          ${initEventTypesItemTemplate()}
                       </fieldset>
                     </div>
                   </div>
@@ -174,16 +175,39 @@ function createEditPointTemplate(point, allOffers, checkedOffers, destinationInf
 }
 
 export default class EditEventPointView extends AbstractView{
-  constructor({point, allOffers, checkedOffers, destinationInfo, allPoints }){
+  #handleSubmit = null;
+
+  constructor({point, allOffers, checkedOffers, destinationInfo, allPoints, onSubmit }){
     super();
     this.allOffers = allOffers;
     this.checkedOffers = checkedOffers;
     this.destinationInfo = destinationInfo;
     this.point = point;
     this.allPoints = allPoints;
+    this.#handleSubmit = onSubmit;
+    this.saveButton.addEventListener('submit', this.#submitHandler);
+    this.rollUpButton.addEventListener('click', this.#clickHandler);
+  }
+
+  get saveButton(){
+    return this.element.querySelector('.event--edit');
+  }
+
+  get rollUpButton(){
+    return this.element.querySelector('.event__rollup-btn');
   }
 
   get template() {
     return createEditPointTemplate(this.point, this.allOffers, this.checkedOffers, this.destinationInfo, this.allPoints);
   }
+
+  #submitHandler = (evt) =>{
+    evt.preventDefault();
+    this.#handleSubmit();
+  };
+
+  #clickHandler = (evt) =>{
+    evt.preventDefault();
+    this.#handleSubmit();
+  };
 }

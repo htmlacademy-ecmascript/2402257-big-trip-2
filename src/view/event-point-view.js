@@ -66,11 +66,11 @@ function createEventPointTemplate(point, offers) {
 }
 
 export default class EventPointView extends AbstractView{
-  #handleClick = null;
+  #handleEditClick = null;
 
-  constructor({ point, offers, descriptionInfo, onClick }) {
+  constructor({ point, offers, descriptionInfo, onEditClick }) {
     super();
-    this.#handleClick = onClick;
+    this.#handleEditClick = onEditClick;
     this.offers = offers;
     this.destinations = descriptionInfo;
     this.point = point;
@@ -87,6 +87,6 @@ export default class EventPointView extends AbstractView{
 
   #clickHandler = (evt) => {
     evt.preventDefault();
-    this.#handleClick();
+    this.#handleEditClick();
   };
 }
