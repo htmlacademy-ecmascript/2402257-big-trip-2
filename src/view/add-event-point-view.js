@@ -1,5 +1,6 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { capitalizeFirstLetter, localizeDateFormat } from '../util.js';
+import { EVENT_TYPES } from '../const.js';
 
 const checked = 'checked';
 const unchecked = 'unchecked';
@@ -44,8 +45,8 @@ function initDestinationListOptions(allPoints){
     .join('');
 }
 
-function initEventTypesItemTemplate(allPoints){
-  const allTypes = [...new Set(allPoints.map((currentPoint) => currentPoint.type))];
+function initEventTypesItemTemplate(){
+  const allTypes = EVENT_TYPES;
 
   if (!allTypes || allTypes.length === 0) {
     return '';
@@ -115,7 +116,7 @@ function createAddPointTemplate(point, allOffers, checkedOffers, destinationInfo
                     <div class="event__type-list">
                       <fieldset class="event__type-group">
                         <legend class="visually-hidden">Event type</legend>
-                         ${initEventTypesItemTemplate(allPoints)}
+                         ${initEventTypesItemTemplate()}
                       </fieldset>
                     </div>
                   </div>
@@ -169,9 +170,9 @@ function createAddPointTemplate(point, allOffers, checkedOffers, destinationInfo
             </li>`;
 }
 
-export default class AddEventPointView {
-
+export default class AddEventPointView extends AbstractView{
   constructor({point, allOffers, checkedOffers, destinationInfo, allPoints }){
+    super();
     this.allOffers = allOffers;
     this.checkedOffers = checkedOffers;
     this.destinationInfo = destinationInfo;
@@ -179,19 +180,7 @@ export default class AddEventPointView {
     this.allPoints = allPoints;
   }
 
-  getTemplate() {
+  get template() {
     return createAddPointTemplate(this.point, this.allOffers, this.checkedOffers, this.destinationInfo, this.allPoints);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }

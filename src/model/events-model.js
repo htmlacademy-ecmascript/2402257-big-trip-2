@@ -5,12 +5,12 @@ import { mockEventPointOffers } from '../mock/offers';
 const POINTS_COUNT = 4;
 
 export default class PointsModel {
-  points = Array.from({ length: POINTS_COUNT }, getRandomEventPoint);
+  #points = Array.from({ length: POINTS_COUNT }, getRandomEventPoint);
   offers = mockEventPointOffers;
   destinations = mockEventPointDestinations;
 
   getPoints() {
-    return this.points;
+    return this.#points;
   }
 
   getOffers(){
