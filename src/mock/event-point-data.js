@@ -1,4 +1,4 @@
-import { getRandomElement } from '../util';
+import { getRandomElement } from '../utils/random';
 
 const mockEventPoint = [
   {
@@ -15,7 +15,7 @@ const mockEventPoint = [
     type: 'flight',
     id: 2,
     name: 'israel',
-    startTime: new Date('2025-03-10T10:00'),
+    startTime: new Date('2025-03-22T10:00'),
     endTime: new Date('2025-03-10T15:00'),
     price: '3210',
     isFavorite: false,
