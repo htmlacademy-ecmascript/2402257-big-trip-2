@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { capitalizeFirstLetter, localizeDateFormat } from '../util.js';
+import { capitalizeFirstLetter, localizeDateFormat } from '../utils/date.js';
 import { EVENT_TYPES } from '../const.js';
 
 const checked = 'checked';

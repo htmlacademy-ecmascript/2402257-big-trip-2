@@ -6,6 +6,7 @@ import { render, replace } from '../framework/render';
 import FilterButtonsView from '../view/filter-view.js';
 import SortButtonsView from '../view/sort-view.js';
 import NoEventPointView from '../view/no-event-point-view.js';
+import { generateFilter } from '../mock/filter.js';
 export default class EventPresenter {
 
   #listContainer = null;
@@ -29,6 +30,7 @@ export default class EventPresenter {
     }
     this.#renderSortView();
     this.#renderEventListView();
+    //console.log(generateFilter(this.#eventPoints));
   }
 
   #renderAddPointView(point) {
@@ -118,7 +120,7 @@ export default class EventPresenter {
   }
 
   #renderFilterView(){
-    render(new FilterButtonsView(), this.#filterContainer);
+    render(new FilterButtonsView({ filters:generateFilter(this.#eventPoints)}), this.#filterContainer);
   }
 
 }

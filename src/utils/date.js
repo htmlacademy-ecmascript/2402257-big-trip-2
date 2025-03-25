@@ -9,10 +9,6 @@ const DATE_FORMAT_POINT = 'D MMMM';
 const DATE_FORMAT_EDIT_POINT = 'DD/MM/YY';
 const TIME_FORMAT = 'HH:mm';
 
-function getRandomElement(items) {
-  return items[Math.floor(Math.random() * items.length)];
-}
-
 function getRandomInteger(maxLimit = 10000) {
   return Math.floor(Math.random() * maxLimit);
 }
@@ -64,12 +60,25 @@ function getEventTimeDuration(startTime, endTime) {
   return `${formattedDuration}`;
 }
 
+function isDatePresent(dueDate){
+  return dueDate && dayjs(dueDate).isSame(dayjs(), 'D');
+}
+
+function isDateFuture(dueDate){
+  return dueDate && dayjs(dueDate).isAfter(dayjs(), 'D');
+}
+
+function isDatePast(dueDate){
+  return dueDate && dayjs(dueDate).isBefore(dayjs(), 'D');
+}
 export {
-  getRandomElement,
   humanizeEventDate,
   getRandomInteger,
   humanizeEventTime,
   capitalizeFirstLetter,
   localizeDateFormat,
-  getEventTimeDuration
+  getEventTimeDuration,
+  isDatePresent,
+  isDateFuture,
+  isDatePast
 };

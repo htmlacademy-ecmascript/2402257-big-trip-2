@@ -12,10 +12,6 @@ const mockEventPointDestinations = [
         src: 'https://media.iamsterdam.com/w_880,h_880/27ubxv973ixi-uitkrant-705-beeld-b.webp',
         description: 'consectetur adipiscing elit',
       },
-      {
-        src: 'https://loremflickr.com/248/152?random=10',
-        description: 'Cras aliquet varius magna',
-      },
     ],
   },
   {

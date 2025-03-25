@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { humanizeEventDate, humanizeEventTime, capitalizeFirstLetter, getEventTimeDuration } from '../util.js';
+import { humanizeEventDate, humanizeEventTime, capitalizeFirstLetter, getEventTimeDuration } from '../utils/date.js';
 
 function createPointOffersTemplate(title, price) {
   return ` <li class="event__offer">
