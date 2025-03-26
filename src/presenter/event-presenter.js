@@ -1,8 +1,7 @@
 import AddPointView from '../view/add-event-point-view';
-import EditPointView from '../view/edit-event-point-view';
+import PointPresenter from './point-presenter.js';
 import EventListView from '../view/event-list-view';
-import EventPointView from '../view/event-point-view';
-import { render, replace } from '../framework/render';
+import { render } from '../framework/render';
 import FilterButtonsView from '../view/filter-view.js';
 import SortButtonsView from '../view/sort-view.js';
 import NoEventPointView from '../view/no-event-point-view.js';
@@ -23,14 +22,22 @@ export default class EventPresenter {
 
   init() {
     this.#eventPoints = [...this.#pointModel.getPoints()];
-    this.#renderFilterView();
+    this.#renderApp();
+  }
+
+  #renderApp(){
     if (this.#eventPoints.length === 0){
       render(new NoEventPointView(), this.#listContainer);
       return;
     }
+    this.#renderFilterView();
     this.#renderSortView();
-    this.#renderEventListView();
-    //console.log(generateFilter(this.#eventPoints));
+    this.#renderPoint();
+  }
+
+  #renderPoint(){
+    const pointPresenter = new PointPresenter({pointModel: this.#pointModel,points: this.#eventPoints, eventListComponent: this.#eventListComponent, listContainer: this.#listContainer });
+    pointPresenter.init();
   }
 
   #renderAddPointView(point) {
@@ -50,70 +57,6 @@ export default class EventPresenter {
     );
   }
 
-  #renderEventPointView(point) {
-
-    const onDocumentKeyDown = (evt) =>{
-      if (evt.key === 'Escape'){
-        evt.preventDefault();
-        replaceEditPointToPoint();
-        document.removeEventListener('keydown', onDocumentKeyDown);
-      }
-    };
-
-    const eventOffers = [...this.#pointModel.getOffersById(point.type, point.offers)];
-    const eventDestinations = { ...this.#pointModel.getDestinationsByName(point.name) };
-    const eventOffersByType = this.#pointModel.getOffersByType(point.type);
-    const eventCheckedOffers = this.#pointModel.getOffersById(point.type, point.offers);
-
-    const eventPointComponent = new EventPointView({
-      point: point,
-      offers: eventOffers,
-      destinations: eventDestinations,
-      onEditClick: () => {
-        replacePointToEditPoint();
-        document.addEventListener('keydown', onDocumentKeyDown);
-      }
-    });
-
-    const editPointComponent = new EditPointView({
-      point: point,
-      allOffers: eventOffersByType,
-      checkedOffers: eventCheckedOffers,
-      destinationInfo: eventDestinations,
-      allPoints: this.#eventPoints,
-      onSubmit: () => {
-        replaceEditPointToPoint();
-        document.removeEventListener('keydown', onDocumentKeyDown);
-      }
-    });
-
-    render(
-      eventPointComponent,
-      this.#eventListComponent.element
-    );
-
-    function replacePointToEditPoint(){
-      replace(editPointComponent, eventPointComponent);
-    }
-
-    function replaceEditPointToPoint(){
-      replace(eventPointComponent, editPointComponent);
-    }
-
-
-  }
-
-  #renderEventListView(){
-    render(this.#eventListComponent, this.#listContainer);
-
-    //this.#renderEditPointView(this.#eventPoints[0]);
-
-    // this.#renderAddPointView(this.#eventPoints[1]);
-
-    for (let i = 0; i < this.#eventPoints.length; i++){
-      this.#renderEventPointView(this.#eventPoints[i]);
-    }
-  }
 
   #renderSortView(){
     render(new SortButtonsView(), this.#listContainer);
