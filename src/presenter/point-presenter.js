@@ -1,78 +1,100 @@
 import EditPointView from '../view/edit-event-point-view';
 import EventPointView from '../view/event-point-view';
-import { render, replace } from '../framework/render';
+import { render, replace, remove } from '../framework/render';
 
 export default class PointPresenter {
 
   #pointModel = null;
   #eventPoints = [];
   #eventListComponent = null;
-  #listContainer = null;
   #eventPointComponent = null;
+  #point = null;
   #editPointComponent = null;
 
-  constructor({pointModel, points, eventListComponent, listContainer }){
+  constructor({pointModel, points, eventListComponent }){
     this.#pointModel = pointModel;
     this.#eventPoints = points;
     this.#eventListComponent = eventListComponent;
-    this.#listContainer = listContainer;
   }
 
-  #renderEventPointView(point) {
+
+  init(point){
+
+    this.#point = point;
+
     const onDocumentKeyDown = (evt) =>{
       if (evt.key === 'Escape'){
         evt.preventDefault();
-        replaceEditPointToPoint();
+        this.#replaceEditPointToPoint();
         document.removeEventListener('keydown', onDocumentKeyDown);
       }
     };
 
+    const prevPointComponent = this.#eventPointComponent;
+    const prevEditPointComponent = this.#editPointComponent;
 
     const eventOffers = [...this.#pointModel.getOffersById(point.type, point.offers)];
     const eventDestinations = { ...this.#pointModel.getDestinationsByName(point.name) };
     const eventOffersByType = this.#pointModel.getOffersByType(point.type);
     const eventCheckedOffers = this.#pointModel.getOffersById(point.type, point.offers);
 
-    const eventPointComponent = new EventPointView({
-      point: point,
+    this.#eventPointComponent = new EventPointView({
+      point: this.#point,
       offers: eventOffers,
       destinations: eventDestinations,
       onEditClick: () => {
-        replacePointToEditPoint();
+        this.#handlePointClick();
         document.addEventListener('keydown', onDocumentKeyDown);
       }
     });
 
-    const editPointComponent = new EditPointView({
-      point: point,
+    this.#editPointComponent = new EditPointView({
+      point: this.#point,
       allOffers: eventOffersByType,
       checkedOffers: eventCheckedOffers,
       destinationInfo: eventDestinations,
       allPoints: this.#eventPoints,
       onSubmit: () => {
-        replaceEditPointToPoint();
+        this.#handleEditPointClick();
         document.removeEventListener('keydown', onDocumentKeyDown);
       }
     });
-
-    render(eventPointComponent, this.#eventListComponent.element);
-
-    function replacePointToEditPoint(){
-      replace(editPointComponent, eventPointComponent);
+    if (prevPointComponent === null || prevEditPointComponent === null) {
+      render(this.#eventPointComponent, this.#eventListComponent.element);
+      return;
     }
 
-    function replaceEditPointToPoint(){
-      replace(eventPointComponent, editPointComponent);
+    if (this.#eventListComponent.contains(prevPointComponent.element)) {
+      replace(this.#eventPointComponent, prevPointComponent);
     }
+
+    if (this.#eventListComponent.contains(prevEditPointComponent.element)) {
+      replace(this.#editPointComponent, prevEditPointComponent);
+    }
+
+    remove(prevPointComponent);
+    remove(prevEditPointComponent);
+
   }
 
-
-  init(){
-    render(this.#eventListComponent, this.#listContainer);
-
-
-    for (let i = 0; i < this.#eventPoints.length; i++){
-      this.#renderEventPointView(this.#eventPoints[i]);
-    }
+  destroy(){
+    remove(this.#eventPointComponent);
+    remove(this.#editPointComponent);
   }
+
+  #replacePointToEditPoint () {
+    replace(this.#editPointComponent, this.#eventPointComponent);
+  }
+
+  #replaceEditPointToPoint(){
+    replace(this.#eventPointComponent, this.#editPointComponent);
+  }
+
+  #handlePointClick = () => {
+    this.#replacePointToEditPoint();
+  };
+
+  #handleEditPointClick = () => {
+    this.#replaceEditPointToPoint();
+  };
 }

@@ -8,14 +8,14 @@ import NoEventPointView from '../view/no-event-point-view.js';
 import { generateFilter } from '../mock/filter.js';
 export default class EventPresenter {
 
-  #listContainer = null;
+  #eventListContainer = null;
   #pointModel = null;
   #eventListComponent = new EventListView();
   #eventPoints = [];
   #filterContainer = null;
 
   constructor({ listContainer, pointModel, filterContainer }) {
-    this.#listContainer = listContainer;
+    this.#eventListContainer = listContainer;
     this.#pointModel = pointModel;
     this.#filterContainer = filterContainer;
   }
@@ -27,17 +27,30 @@ export default class EventPresenter {
 
   #renderApp(){
     if (this.#eventPoints.length === 0){
-      render(new NoEventPointView(), this.#listContainer);
+      render(new NoEventPointView(), this.#eventListContainer);
       return;
     }
+
     this.#renderFilterView();
     this.#renderSortView();
-    this.#renderPoint();
+    this.#renderEventList();
+    this.#renderPoints();
+
+
   }
 
-  #renderPoint(){
-    const pointPresenter = new PointPresenter({pointModel: this.#pointModel,points: this.#eventPoints, eventListComponent: this.#eventListComponent, listContainer: this.#listContainer });
-    pointPresenter.init();
+  #renderPoint(point){
+    const pointPresenter = new PointPresenter({pointModel: this.#pointModel,points: this.#eventPoints, eventListComponent: this.#eventListComponent });
+    pointPresenter.init(point);
+  }
+
+  #renderPoints(){
+
+    this.#eventPoints.forEach(
+      (point) => {
+        this.#renderPoint(point);
+      }
+    );
   }
 
   #renderAddPointView(point) {
@@ -59,11 +72,14 @@ export default class EventPresenter {
 
 
   #renderSortView(){
-    render(new SortButtonsView(), this.#listContainer);
+    render(new SortButtonsView(), this.#eventListContainer);
   }
 
   #renderFilterView(){
     render(new FilterButtonsView({ filters:generateFilter(this.#eventPoints)}), this.#filterContainer);
   }
 
+  #renderEventList(){
+    render(this.#eventListComponent, this.#eventListContainer);
+  }
 }
