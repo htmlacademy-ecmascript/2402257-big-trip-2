@@ -6,6 +6,7 @@ import FilterButtonsView from '../view/filter-view.js';
 import SortButtonsView from '../view/sort-view.js';
 import NoEventPointView from '../view/no-event-point-view.js';
 import { generateFilter } from '../mock/filter.js';
+import { updateItem } from '../utils/common.js';
 export default class EventPresenter {
 
   #eventListContainer = null;
@@ -13,6 +14,7 @@ export default class EventPresenter {
   #eventListComponent = new EventListView();
   #eventPoints = [];
   #filterContainer = null;
+  #pointPresenters = new Map();
 
   constructor({ listContainer, pointModel, filterContainer }) {
     this.#eventListContainer = listContainer;
@@ -40,8 +42,16 @@ export default class EventPresenter {
   }
 
   #renderPoint(point){
-    const pointPresenter = new PointPresenter({pointModel: this.#pointModel,points: this.#eventPoints, eventListComponent: this.#eventListComponent });
+    const pointPresenter = new PointPresenter({
+      pointModel: this.#pointModel,
+      points: this.#eventPoints,
+      eventListComponent: this.#eventListComponent.element,
+      onDataChange: this.#handlePointChange,
+      onModeChange: this.#handleModeChange
+    });
     pointPresenter.init(point);
+
+    this.#pointPresenters.set(point.id, pointPresenter);
   }
 
   #renderPoints(){
@@ -70,6 +80,19 @@ export default class EventPresenter {
     );
   }
 
+  #clearPointList() {
+    this.#pointPresenters.forEach((presenter) => presenter.destroy());
+    this.#pointPresenters.clear();
+  }
+
+  #handleModeChange = () => {
+    this.#pointPresenters.forEach((presenter) => presenter.resetView());
+  };
+
+  #handlePointChange = (updatedPoint) =>{
+    this.#eventPoints = updateItem(this.#eventPoints, updatedPoint);
+    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
+  };
 
   #renderSortView(){
     render(new SortButtonsView(), this.#eventListContainer);

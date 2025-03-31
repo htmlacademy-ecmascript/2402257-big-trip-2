@@ -67,14 +67,17 @@ function createEventPointTemplate(point, offers) {
 
 export default class EventPointView extends AbstractView{
   #handleEditClick = null;
+  #handleFavoriteClick = null;
 
-  constructor({ point, offers, descriptionInfo, onEditClick }) {
+  constructor({ point, offers, descriptionInfo, onEditClick, handleFavoriteClick }) {
     super();
     this.#handleEditClick = onEditClick;
     this.offers = offers;
     this.destinations = descriptionInfo;
     this.point = point;
     this.rollUpButtonElement.addEventListener('click', this.#clickHandler);
+    this.favoriteButtonClick.addEventListener('click', this.#favoriteButtonClickHandler);
+    this.#handleFavoriteClick = handleFavoriteClick;
   }
 
   get template() {
@@ -85,8 +88,17 @@ export default class EventPointView extends AbstractView{
     return this.element.querySelector('.event__rollup-btn');
   }
 
+  get favoriteButtonClick(){
+    return this.element.querySelector('.event__favorite-btn');
+  }
+
   #clickHandler = (evt) => {
     evt.preventDefault();
     this.#handleEditClick();
+  };
+
+  #favoriteButtonClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFavoriteClick();
   };
 }
