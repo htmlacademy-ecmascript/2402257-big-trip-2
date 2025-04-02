@@ -16,7 +16,7 @@ const mockEventPoint = [
     id: 2,
     name: 'israel',
     startTime: new Date('2025-03-22T10:00'),
-    endTime: new Date('2025-03-10T15:00'),
+    endTime: new Date('2025-03-23T15:00'),
     price: '3210',
     isFavorite: false,
     offers: [1, 2],
@@ -47,4 +47,4 @@ function getRandomEventPoint() {
   return getRandomElement(mockEventPoint);
 }
 
-export { getRandomEventPoint };
+export { getRandomEventPoint, mockEventPoint };

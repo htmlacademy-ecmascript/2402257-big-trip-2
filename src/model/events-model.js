@@ -1,11 +1,10 @@
-import { getRandomEventPoint } from '../mock/event-point-data';
+import { mockEventPoint } from '../mock/event-point-data';
 import { mockEventPointDestinations } from '../mock/destination';
 import { mockEventPointOffers } from '../mock/offers';
 
-const POINTS_COUNT = 4;
 
 export default class PointsModel {
-  #points = Array.from({ length: POINTS_COUNT }, getRandomEventPoint);
+  #points = mockEventPoint;
   offers = mockEventPointOffers;
   destinations = mockEventPointDestinations;
 
