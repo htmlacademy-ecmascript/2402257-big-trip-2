@@ -51,7 +51,7 @@ export default class SortButtonsView extends AbstractView{
     if (evt.target.tagName !== 'LABEL') {
       return;
     }
-
+    // проверьте меня ^_^
     this.#handleSortTypeChange(evt.target.dataset.sortType);
   };
 }

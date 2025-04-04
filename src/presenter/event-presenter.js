@@ -42,6 +42,7 @@ export default class EventPresenter {
     this.#renderFilterView();
     this.#renderSortView();
     this.#renderEventList();
+    this.#sortPoints(SortType.DAY);
     this.#renderPoints();
 
 
@@ -116,7 +117,7 @@ export default class EventPresenter {
         break;
       default:
 
-        this.#eventPoints = [...this.#sourcedListPoints];
+        //this.#eventPoints = [...this.#sourcedListPoints];
     }
 
     this.#currentSortType = sortType;
