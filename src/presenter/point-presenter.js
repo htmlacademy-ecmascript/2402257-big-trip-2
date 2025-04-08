@@ -65,8 +65,8 @@ export default class PointPresenter {
       checkedOffers: eventCheckedOffers,
       destinationInfo: eventDestinations,
       allPoints: this.#eventPoints,
-      onSubmit: () => {
-        this.#handleEditPointClick();
+      onSubmit: (state) => {
+        this.#handleEditPointClick(state);
         document.removeEventListener('keydown', onDocumentKeyDown);
       }
     });
@@ -114,7 +114,8 @@ export default class PointPresenter {
     this.#replacePointToEditPoint();
   };
 
-  #handleEditPointClick = () => {
+  #handleEditPointClick = (state) => {
+    this.#handleDataChange(state);
     this.#replaceEditPointToPoint();
   };
 

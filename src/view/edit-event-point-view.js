@@ -1,4 +1,4 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { capitalizeFirstLetter, localizeDateFormat } from '../utils/date.js';
 import { EVENT_TYPES } from '../const.js';
 
@@ -174,15 +174,15 @@ function createEditPointTemplate(point, allOffers, checkedOffers, destinationInf
             </li>`;
 }
 
-export default class EditEventPointView extends AbstractView{
+export default class EditEventPointView extends AbstractStatefulView{
   #handleSubmit = null;
 
   constructor({point, allOffers, checkedOffers, destinationInfo, allPoints, onSubmit }){
     super();
+    this._setState(EditEventPointView.parsePointToState(point));
     this.allOffers = allOffers;
     this.checkedOffers = checkedOffers;
     this.destinationInfo = destinationInfo;
-    this.point = point;
     this.allPoints = allPoints;
     this.#handleSubmit = onSubmit;
     this.saveButton.addEventListener('submit', this.#submitHandler);
@@ -198,12 +198,20 @@ export default class EditEventPointView extends AbstractView{
   }
 
   get template() {
-    return createEditPointTemplate(this.point, this.allOffers, this.checkedOffers, this.destinationInfo, this.allPoints);
+    return createEditPointTemplate(this._state,this.allOffers, this.checkedOffers, this.destinationInfo, this.allPoints);
+  }
+
+  static parsePointToState(point){
+    return {...point};
+  }
+
+  static parseStateToPoint(state){
+    return {...state};
   }
 
   #submitHandler = (evt) =>{
     evt.preventDefault();
-    this.#handleSubmit();
+    this.#handleSubmit(EditEventPointView.parseStateToPoint(this._state));
   };
 
   #clickHandler = (evt) =>{
