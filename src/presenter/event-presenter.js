@@ -99,7 +99,6 @@ export default class EventPresenter {
   #handlePointChange = (updatedPoint) =>{
     this.#eventPoints = updateItem(this.#eventPoints, updatedPoint);
     this.#sourcedListPoints = updateItem(this.#sourcedListPoints, updatedPoint);
-    // после этой строчки в методе инит начинаются проблемы
     this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
   };
 

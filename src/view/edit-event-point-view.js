@@ -1,6 +1,8 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { capitalizeFirstLetter, localizeDateFormat } from '../utils/date.js';
+import { capitalizeFirstLetter, localizeDateFormat, firstLetterToLowerCase } from '../utils/date.js';
 import { EVENT_TYPES } from '../const.js';
+import { mockEventPointDestinations } from '../mock/destination';
+import { mockEventPointOffers } from '../mock/offers';
 
 const checked = 'checked';
 const unchecked = 'unchecked';
@@ -92,17 +94,13 @@ function initOffersTemplate(allOffers, offers) {
     .join('');
 }
 
-function createEditPointTemplate(point, allOffers, checkedOffers, destinationInfo, allPoints) {
+function createEditPointTemplate({type, name, startTime, endTime, price , allOffers, checkedOffers, destinationInfo = false, allPoints}) {
 
-  const { infoText, pictures} = destinationInfo;
-
-  const { type, name, startTime, endTime, price} = point;
 
   const eventStartDate = localizeDateFormat(startTime);
   const eventEndDate = localizeDateFormat(endTime);
 
   const capitalizedName = capitalizeFirstLetter(name);
-
   return `<li class="trip-events__item">
               <form class="event event--edit" action="#" method="post">
                 <header class="event__header">
@@ -158,15 +156,15 @@ function createEditPointTemplate(point, allOffers, checkedOffers, destinationInf
                     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
                     <div class="event__available-offers">
-                      ${initOffersTemplate(allOffers, checkedOffers)}
+                      ${allOffers ? initOffersTemplate(allOffers, checkedOffers) : ''}
                     </div>
                   </section>
 
                   <section class="event__section  event__section--destination">
                     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-                    <p class="event__destination-description">${infoText}</p>
+                    <p class="event__destination-description">${ destinationInfo ? destinationInfo.infoText : ''}</p>
 
-                    ${createDescriptionPicturesTemplate(pictures)}
+                    ${ destinationInfo ? createDescriptionPicturesTemplate(destinationInfo.pictures) : ''}
 
                   </section>
                 </section>
@@ -177,37 +175,106 @@ function createEditPointTemplate(point, allOffers, checkedOffers, destinationInf
 export default class EditEventPointView extends AbstractStatefulView{
   #handleSubmit = null;
 
-  constructor({point, allOffers, checkedOffers, destinationInfo, allPoints, onSubmit }){
+  constructor({point, allOffers, checkedOffers, destinationInfo, allPoints, onSubmit, cancelHandler }){
     super();
-    this._setState(EditEventPointView.parsePointToState(point));
+    this.pointData = { ...point, allOffers, checkedOffers, destinationInfo, allPoints };
+    this.cancelHandler = cancelHandler;
+    this._setState(EditEventPointView.parsePointToState(this.pointData));
     this.allOffers = allOffers;
     this.checkedOffers = checkedOffers;
     this.destinationInfo = destinationInfo;
     this.allPoints = allPoints;
     this.#handleSubmit = onSubmit;
+    this._restoreHandlers();
+  }
+
+  _restoreHandlers(){
     this.saveButton.addEventListener('submit', this.#submitHandler);
     this.rollUpButton.addEventListener('click', this.#clickHandler);
+    this.pointTypeParentElement.addEventListener('change', this.#pointTypeHandler);
+    this.pointDestinationTextInput.addEventListener('change', this.#pointDestinationHandler);
+    this.cancelButton.addEventListener('click', this.#clickHandler);
   }
 
   get saveButton(){
     return this.element.querySelector('.event--edit');
   }
 
+  get cancelButton(){
+    return this.element.querySelector('.event__reset-btn');
+  }
+
   get rollUpButton(){
     return this.element.querySelector('.event__rollup-btn');
   }
 
+  get pointTypeParentElement(){
+    return this.element.querySelector('.event__type-group');
+  }
+
+  get pointDestinationTextInput(){
+    return this.element.querySelector('.event__input--destination');
+  }
+
   get template() {
-    return createEditPointTemplate(this._state,this.allOffers, this.checkedOffers, this.destinationInfo, this.allPoints);
+    return createEditPointTemplate(this._state);
   }
 
   static parsePointToState(point){
-    return {...point};
+    return {...point
+    };
   }
 
   static parseStateToPoint(state){
     return {...state};
   }
+
+  #pointTypeHandler = (evt) => {
+    this.updateElement({type: evt.target.value});
+    this.updateElement({allOffers: this.#getOffersByType(evt.target.value), checkedOffers:  this.#getOffersById(evt.target.value, this._state.offers) });
+  };
+
+  #pointDestinationHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({name: firstLetterToLowerCase(evt.target.value), destinationInfo: this.#findDestinationInfo(evt.target.value)});
+  };
+
+  #getOffersByType = (type) => {
+    const typedOffers = mockEventPointOffers.find((el) => el.type === type);
+
+    if (typedOffers === undefined){
+      return [];
+    } else{
+      return typedOffers.offers;
+    }
+  };
+
+  #getOffersById = (type, pointsId) => {
+
+    const offersById = [];
+
+    if (this.#getOffersByType(type) === false){
+      return [];
+    }
+    this.#getOffersByType(type).forEach((typedOffer) => {
+
+      if(pointsId.some((pointOfferId) => pointOfferId === typedOffer.id)){
+        offersById.push(typedOffer);
+
+      }
+
+    });
+    return offersById;
+  };
+
+  #findDestinationInfo = (name) => {
+    const destinationsByName = mockEventPointDestinations.find((destination) => destination.name === firstLetterToLowerCase(name));
+    if (!(destinationsByName)){
+      return null;
+    }
+    return destinationsByName;
+  };
+
 
   #submitHandler = (evt) =>{
     evt.preventDefault();
@@ -216,6 +283,13 @@ export default class EditEventPointView extends AbstractStatefulView{
 
   #clickHandler = (evt) =>{
     evt.preventDefault();
-    this.#handleSubmit();
+    this.cancelHandler();
   };
+
+  reset(point) {
+    this.updateElement(
+      EditEventPointView.parsePointToState(point),
+    );
+  }
+
 }

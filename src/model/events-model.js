@@ -18,11 +18,17 @@ export default class PointsModel {
 
   getOffersByType(type){
     const allOffers = this.getOffers();
-    return allOffers.find((el) => el.type === type).offers;
+    const typedOffers = allOffers.find((el) => el.type === type);
+
+    if (typedOffers === undefined){
+      return [];
+    }
+    return typedOffers.offers;
 
   }
 
   getOffersById(type, pointsId){
+
     const offersType = this.getOffersByType(type);
     //console.log(offersType); тут проверяю что правильно приходит массив с оферами
     const offersById = [];
@@ -44,8 +50,12 @@ export default class PointsModel {
 
   getDestinationsByName(pointsName){
     const allDestinations = this.getDestinations();
-    //console.log(allDestinations.find((destination) => destination.name === pointsName).pictures); тут проверяю что
-    // destinations по имени точки пришли правильно
-    return allDestinations.find((destination) => destination.name === pointsName);
+    const destinationsByName = allDestinations.find((destination) => destination.name === pointsName);
+
+    if (destinationsByName === undefined){
+      return null;
+    } else {
+      return destinationsByName;
+    }
   }
 }
