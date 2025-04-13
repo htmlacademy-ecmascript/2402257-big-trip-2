@@ -94,7 +94,7 @@ function initOffersTemplate(allOffers, offers) {
     .join('');
 }
 
-function createEditPointTemplate({type, name, startTime, endTime, price , allOffers, checkedOffers, destinationInfo = false, allPoints}) {
+function createEditPointTemplate({type, name, startTime, endTime, price , allOffers, checkedOffers, destinationInfo, allPoints}) {
 
 
   const eventStartDate = localizeDateFormat(startTime);
@@ -162,10 +162,8 @@ function createEditPointTemplate({type, name, startTime, endTime, price , allOff
 
                   <section class="event__section  event__section--destination">
                     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-                    <p class="event__destination-description">${ destinationInfo ? destinationInfo.infoText : ''}</p>
-
-                    ${ destinationInfo ? createDescriptionPicturesTemplate(destinationInfo.pictures) : ''}
-
+                    <p class="event__destination-description">${destinationInfo?.infoText ?? ''}</p>
+                    ${destinationInfo ? createDescriptionPicturesTemplate(destinationInfo.pictures) : ''}
                   </section>
                 </section>
               </form>
@@ -180,10 +178,6 @@ export default class EditEventPointView extends AbstractStatefulView{
     this.pointData = { ...point, allOffers, checkedOffers, destinationInfo, allPoints };
     this.cancelHandler = cancelHandler;
     this._setState(EditEventPointView.parsePointToState(this.pointData));
-    this.allOffers = allOffers;
-    this.checkedOffers = checkedOffers;
-    this.destinationInfo = destinationInfo;
-    this.allPoints = allPoints;
     this.#handleSubmit = onSubmit;
     this._restoreHandlers();
   }
@@ -193,15 +187,10 @@ export default class EditEventPointView extends AbstractStatefulView{
     this.rollUpButton.addEventListener('click', this.#clickHandler);
     this.pointTypeParentElement.addEventListener('change', this.#pointTypeHandler);
     this.pointDestinationTextInput.addEventListener('change', this.#pointDestinationHandler);
-    this.cancelButton.addEventListener('click', this.#clickHandler);
   }
 
   get saveButton(){
     return this.element.querySelector('.event--edit');
-  }
-
-  get cancelButton(){
-    return this.element.querySelector('.event__reset-btn');
   }
 
   get rollUpButton(){
@@ -226,7 +215,8 @@ export default class EditEventPointView extends AbstractStatefulView{
   }
 
   static parseStateToPoint(state){
-    return {...state};
+    return {...state
+    };
   }
 
   #pointTypeHandler = (evt) => {
@@ -287,8 +277,10 @@ export default class EditEventPointView extends AbstractStatefulView{
   };
 
   reset(point) {
-    this.updateElement(
-      EditEventPointView.parsePointToState(point),
+    this.updateElement({...EditEventPointView.parsePointToState(point),
+      destinationInfo: this.#findDestinationInfo(point.name),
+      allOffers: this.#getOffersByType(point.type),
+    }
     );
   }
 
