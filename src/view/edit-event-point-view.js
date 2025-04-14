@@ -3,6 +3,9 @@ import { capitalizeFirstLetter, localizeDateFormat, firstLetterToLowerCase } fro
 import { EVENT_TYPES } from '../const.js';
 import { mockEventPointDestinations } from '../mock/destination';
 import { mockEventPointOffers } from '../mock/offers';
+import flatpickr from 'flatpickr';
+
+import 'flatpickr/dist/flatpickr.min.css';
 
 const checked = 'checked';
 const unchecked = 'unchecked';
@@ -131,10 +134,10 @@ function createEditPointTemplate({type, name, startTime, endTime, price , allOff
 
                   <div class="event__field-group  event__field-group--time">
                     <label class="visually-hidden" for="event-start-time-1">From</label>
-                    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${eventStartDate}">
+                    <input class="event__input  event__input--time-1" id="event-start-time-1" type="text" name="event-start-time" value="${eventStartDate}">
                     &mdash;
                     <label class="visually-hidden" for="event-end-time-1">To</label>
-                    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${eventEndDate}">
+                    <input class="event__input  event__input--time-2" id="event-end-time-1" type="text" name="event-end-time" value="${eventEndDate}">
                   </div>
 
                   <div class="event__field-group  event__field-group--price">
@@ -172,6 +175,8 @@ function createEditPointTemplate({type, name, startTime, endTime, price , allOff
 
 export default class EditEventPointView extends AbstractStatefulView{
   #handleSubmit = null;
+  #datepickerStart = null;
+  #datepickerEnd = null;
 
   constructor({point, allOffers, checkedOffers, destinationInfo, allPoints, onSubmit, cancelHandler }){
     super();
@@ -187,6 +192,8 @@ export default class EditEventPointView extends AbstractStatefulView{
     this.rollUpButton.addEventListener('click', this.#clickHandler);
     this.pointTypeParentElement.addEventListener('change', this.#pointTypeHandler);
     this.pointDestinationTextInput.addEventListener('change', this.#pointDestinationHandler);
+
+    this.#setDatepicker();
   }
 
   get saveButton(){
@@ -217,6 +224,54 @@ export default class EditEventPointView extends AbstractStatefulView{
   static parseStateToPoint(state){
     return {...state
     };
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this.#datepickerStart && this.#datepickerEnd){
+      this.#datepickerStart.destroy();
+      this.#datepickerStart = null;
+      this.#datepickerEnd.destroy();
+      this.#datepickerEnd = null;
+    }
+
+  }
+
+  #dueDateStartChangeHandler = ([userStartDate]) => {
+    this.updateElement({
+      startTime: userStartDate
+    });
+  };
+
+  #dueDateEndChangeHandler = ([userEndDate]) => {
+    this.updateElement({
+      endTime: userEndDate
+    });
+  };
+
+  #setDatepicker(){
+    if (this._state.startTime && this._state.endTime){
+      this.#datepickerStart = flatpickr(
+        this.element.querySelector('.event__input--time-1'),
+        {
+          dateFormat: 'd/m/y H:i',
+          minDate: 'today',
+          enableTime: true,
+          defaultDate: this._state.startTime,
+          onChange: this.#dueDateStartChangeHandler
+        }
+      );
+      this.#datepickerStart = flatpickr(
+        this.element.querySelector('.event__input--time-2'),
+        {
+          dateFormat: 'd/m/y H:i',
+          enableTime: true,
+          defaultDate: this._state.endTime,
+          onChange: this.#dueDateEndChangeHandler
+        }
+      );
+    }
   }
 
   #pointTypeHandler = (evt) => {
