@@ -45,6 +45,7 @@ export default class PointPresenter {
     const prevEditPointComponent = this.#editPointComponent;
 
     const eventOffers = [...this.#pointModel.getOffersById(point.type, point.offers)];
+    const eventDestinationsAll = [...this.#pointModel.getDestinations()];
     const eventDestinations = { ...this.#pointModel.getDestinationsByName(point.name) };
     const eventOffersByType = this.#pointModel.getOffersByType(point.type);
     const eventCheckedOffers = this.#pointModel.getOffersById(point.type, point.offers);
@@ -65,6 +66,7 @@ export default class PointPresenter {
       allOffers: eventOffersByType,
       checkedOffers: eventCheckedOffers,
       destinationInfo: eventDestinations,
+      allDestinations: eventDestinationsAll,
       allPoints: this.#eventPoints,
       onSubmit: (state) => {
         this.#handleEditPointClick(state);

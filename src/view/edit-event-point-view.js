@@ -1,7 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { capitalizeFirstLetter, localizeDateFormat, firstLetterToLowerCase } from '../utils/date.js';
 import { EVENT_TYPES } from '../const.js';
-import { mockEventPointDestinations } from '../mock/destination';
 import { mockEventPointOffers } from '../mock/offers';
 import flatpickr from 'flatpickr';
 
@@ -177,9 +176,10 @@ export default class EditEventPointView extends AbstractStatefulView{
   #datepickerStart = null;
   #datepickerEnd = null;
 
-  constructor({point, allOffers, checkedOffers, destinationInfo, allPoints, onSubmit, cancelHandler }){
+  constructor({point, allOffers, checkedOffers, destinationInfo, allDestinations, allPoints, onSubmit, cancelHandler }){
     super();
     this.pointData = { ...point, allOffers, checkedOffers, destinationInfo, allPoints };
+    this.allDestinations = allDestinations;
     this.cancelHandler = cancelHandler;
     this._setState(EditEventPointView.parsePointToState(this.pointData));
     this.#handleSubmit = onSubmit;
@@ -311,7 +311,7 @@ export default class EditEventPointView extends AbstractStatefulView{
   };
 
   #findDestinationInfo = (name) => {
-    const destinationsByName = mockEventPointDestinations.find((destination) => destination.name === firstLetterToLowerCase(name));
+    const destinationsByName = this.allDestinations.find((destination) => destination.name === firstLetterToLowerCase(name));
     if (!(destinationsByName)){
       return null;
     }
