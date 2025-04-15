@@ -275,8 +275,7 @@ export default class EditEventPointView extends AbstractStatefulView{
   }
 
   #pointTypeHandler = (evt) => {
-    this.updateElement({type: evt.target.value});
-    this.updateElement({allOffers: this.#getOffersByType(evt.target.value), checkedOffers:  this.#getOffersById(evt.target.value, this._state.offers) });
+    this.updateElement({type: evt.target.value, offers: [], checkedOffers:[], allOffers: this.#getOffersByType(evt.target.value) });
   };
 
   #pointDestinationHandler = (evt) => {
