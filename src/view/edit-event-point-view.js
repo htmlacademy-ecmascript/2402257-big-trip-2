@@ -255,7 +255,6 @@ export default class EditEventPointView extends AbstractStatefulView{
         this.element.querySelector('.event__input--time-1'),
         {
           dateFormat: 'd/m/y H:i',
-          minDate: 'today',
           enableTime: true,
           defaultDate: this._state.startTime,
           onChange: this.#dueDateStartChangeHandler
