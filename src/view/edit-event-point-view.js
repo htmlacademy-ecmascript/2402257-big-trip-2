@@ -256,6 +256,7 @@ export default class EditEventPointView extends AbstractStatefulView{
         {
           dateFormat: 'd/m/y H:i',
           enableTime: true,
+          maxDate: this._state.endTime,
           defaultDate: this._state.startTime,
           onChange: this.#dueDateStartChangeHandler
         }
@@ -265,6 +266,7 @@ export default class EditEventPointView extends AbstractStatefulView{
         {
           dateFormat: 'd/m/y H:i',
           enableTime: true,
+          minDate: this._state.startTime,
           defaultDate: this._state.endTime,
           onChange: this.#dueDateEndChangeHandler
         }
