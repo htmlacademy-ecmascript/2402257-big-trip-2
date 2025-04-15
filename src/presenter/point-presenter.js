@@ -8,7 +8,7 @@ const Mode = {
 };
 export default class PointPresenter {
 
-  #mode = null;
+  #mode = Mode.DEFAULT;
   #pointModel = null;
   #eventPoints = [];
   #eventListComponent = null;
@@ -30,13 +30,14 @@ export default class PointPresenter {
   init(point){
 
     this.#point = point;
-    this.#mode = Mode.DEFAULT;
 
     const onDocumentKeyDown = (evt) =>{
-      if (evt.key === 'Escape'){
+      if (evt.key === 'Escape') {
         evt.preventDefault();
-        this.#replaceEditPointToPoint();
-        document.removeEventListener('keydown', onDocumentKeyDown);
+        if (this.#mode !== Mode.DEFAULT) {
+          this.#editPointComponent.reset(this.#point);
+          this.#replaceEditPointToPoint();
+        }
       }
     };
 
@@ -44,6 +45,7 @@ export default class PointPresenter {
     const prevEditPointComponent = this.#editPointComponent;
 
     const eventOffers = [...this.#pointModel.getOffersById(point.type, point.offers)];
+    const eventDestinationsAll = [...this.#pointModel.getDestinations()];
     const eventDestinations = { ...this.#pointModel.getDestinationsByName(point.name) };
     const eventOffersByType = this.#pointModel.getOffersByType(point.type);
     const eventCheckedOffers = this.#pointModel.getOffersById(point.type, point.offers);
@@ -64,11 +66,13 @@ export default class PointPresenter {
       allOffers: eventOffersByType,
       checkedOffers: eventCheckedOffers,
       destinationInfo: eventDestinations,
+      allDestinations: eventDestinationsAll,
       allPoints: this.#eventPoints,
-      onSubmit: () => {
-        this.#handleEditPointClick();
+      onSubmit: (state) => {
+        this.#handleEditPointClick(state);
         document.removeEventListener('keydown', onDocumentKeyDown);
-      }
+      },
+      cancelHandler: this.#cancelEditingHandler,
     });
     if (prevPointComponent === null || prevEditPointComponent === null) {
       render(this.#eventPointComponent, this.#eventListComponent);
@@ -90,6 +94,7 @@ export default class PointPresenter {
 
   resetView() {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#editPointComponent.reset(this.#point);
       this.#replaceEditPointToPoint();
     }
   }
@@ -98,6 +103,7 @@ export default class PointPresenter {
     remove(this.#eventPointComponent);
     remove(this.#editPointComponent);
   }
+
 
   #replacePointToEditPoint () {
     replace(this.#editPointComponent, this.#eventPointComponent);
@@ -114,11 +120,19 @@ export default class PointPresenter {
     this.#replacePointToEditPoint();
   };
 
-  #handleEditPointClick = () => {
+  #handleEditPointClick = (state) => {
+    this.#handleDataChange(state);
     this.#replaceEditPointToPoint();
   };
 
   #handleFavoriteClick = () => {
     this.#handleDataChange({...this.#point, isFavorite: !this.#point.isFavorite});
+  };
+
+  #cancelEditingHandler = () => {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#editPointComponent.reset(this.#point);
+      this.#replaceEditPointToPoint();
+    }
   };
 }

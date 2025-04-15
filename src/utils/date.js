@@ -32,6 +32,14 @@ function capitalizeFirstLetter(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+function firstLetterToLowerCase(str) {
+  if (!str || typeof str !== 'string') {
+    return str; // возвращаем как есть, если не строка или пустая
+  }
+
+  return str.charAt(0).toLowerCase() + str.slice(1);
+}
+
 function formatDuration(durationObj) {
   const days = durationObj.days();
   const hours = durationObj.hours();
@@ -80,5 +88,6 @@ export {
   getEventTimeDuration,
   isDatePresent,
   isDateFuture,
+  firstLetterToLowerCase,
   isDatePast
 };
