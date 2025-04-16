@@ -71,17 +71,25 @@ function initPictures(pictures){
     .join('');
 }
 
-function createDescriptionPicturesTemplate(pictures){
-  return `<div class="event__photos-container">
+function createDescriptionPicturesTemplate(destinationInfo){
+  return `<section class="event__section  event__section--destination">
+                    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+                    <p class="event__destination-description">${destinationInfo?.infoText ?? ''}</p>
+                    <div class="event__photos-container">
                       <div class="event__photos-tape">
-                       ${initPictures(pictures)}
+                       ${initPictures(destinationInfo.pictures)}
                       </div>
-                    </div>`;
+                    </div>
+            </section>`;
 
 }
 
 function initOffersTemplate(allOffers, offers) {
-  return allOffers
+  return `<section class="event__section  event__section--offers">
+          <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+
+            <div class="event__available-offers">
+      ${allOffers
     .map((currentOffer) => {
       const isChecked = offers.some((offer) => offer.id === currentOffer.id);
 
@@ -92,8 +100,9 @@ function initOffersTemplate(allOffers, offers) {
         currentOffer.name,
         isChecked ? checked : unchecked
       );
-    })
-    .join('');
+    }).join('')}
+              </div>
+            </section>`;
 }
 
 function createEditPointTemplate({type, name, startTime, endTime, price , allOffers, checkedOffers, destinationInfo, allPoints}) {
@@ -153,19 +162,9 @@ function createEditPointTemplate({type, name, startTime, endTime, price , allOff
                   </button>
                 </header>
                 <section class="event__details">
-                  <section class="event__section  event__section--offers">
-                    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+                ${allOffers.length === 0 ? '' : initOffersTemplate(allOffers, checkedOffers)}
+                ${!(destinationInfo.pictures) || !(destinationInfo.infoText) ? '' : createDescriptionPicturesTemplate(destinationInfo)}
 
-                    <div class="event__available-offers">
-                      ${allOffers ? initOffersTemplate(allOffers, checkedOffers) : ''}
-                    </div>
-                  </section>
-
-                  <section class="event__section  event__section--destination">
-                    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-                    <p class="event__destination-description">${destinationInfo?.infoText ?? ''}</p>
-                    ${destinationInfo ? createDescriptionPicturesTemplate(destinationInfo.pictures) : ''}
-                  </section>
                 </section>
               </form>
             </li>`;
@@ -275,7 +274,7 @@ export default class EditEventPointView extends AbstractStatefulView{
   }
 
   #pointTypeHandler = (evt) => {
-    this.updateElement({type: evt.target.value, offers: [], checkedOffers:[], allOffers: this.#getOffersByType(evt.target.value) });
+    this.updateElement({type: evt.target.value, offers: [], checkedOffers: [], allOffers: this.#getOffersByType(evt.target.value) });
   };
 
   #pointDestinationHandler = (evt) => {
@@ -314,7 +313,7 @@ export default class EditEventPointView extends AbstractStatefulView{
   #findDestinationInfo = (name) => {
     const destinationsByName = this.allDestinations.find((destination) => destination.name === firstLetterToLowerCase(name));
     if (!(destinationsByName)){
-      return null;
+      return [];
     }
     return destinationsByName;
   };

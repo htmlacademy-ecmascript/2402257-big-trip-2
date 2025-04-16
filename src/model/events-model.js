@@ -51,9 +51,8 @@ export default class PointsModel {
   getDestinationsByName(pointsName){
     const allDestinations = this.getDestinations();
     const destinationsByName = allDestinations.find((destination) => destination.name === pointsName);
-
     if (destinationsByName === undefined){
-      return null;
+      return {};
     } else {
       return destinationsByName;
     }
