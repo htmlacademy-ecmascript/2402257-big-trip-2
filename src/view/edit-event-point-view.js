@@ -172,16 +172,18 @@ function createEditPointTemplate({type, name, startTime, endTime, price , allOff
 
 export default class EditEventPointView extends AbstractStatefulView{
   #handleSubmit = null;
+  #handleDelete = null;
   #datepickerStart = null;
   #datepickerEnd = null;
 
-  constructor({point, allOffers, checkedOffers, destinationInfo, allDestinations, allPoints, onSubmit, cancelHandler }){
+  constructor({point, allOffers, checkedOffers, destinationInfo, allDestinations, allPoints, onSubmit, handleCancel, handleDelete }){
     super();
     this.pointData = { ...point, allOffers, checkedOffers, destinationInfo, allPoints };
     this.allDestinations = allDestinations;
-    this.cancelHandler = cancelHandler;
+    this.handleCancel = handleCancel;
     this._setState(EditEventPointView.parsePointToState(this.pointData));
     this.#handleSubmit = onSubmit;
+    this.#handleDelete = handleDelete;
     this._restoreHandlers();
   }
 
@@ -190,7 +192,7 @@ export default class EditEventPointView extends AbstractStatefulView{
     this.rollUpButton.addEventListener('click', this.#clickHandler);
     this.pointTypeParentElement.addEventListener('change', this.#pointTypeHandler);
     this.pointDestinationTextInput.addEventListener('change', this.#pointDestinationHandler);
-
+    this.deleteButton.addEventListener('click', this.#pointDeleteHandler);
     this.#setDatepicker();
   }
 
@@ -208,6 +210,10 @@ export default class EditEventPointView extends AbstractStatefulView{
 
   get pointDestinationTextInput(){
     return this.element.querySelector('.event__input--destination');
+  }
+
+  get deleteButton(){
+    return this.element.querySelector('.event__reset-btn');
   }
 
   get template() {
@@ -292,24 +298,6 @@ export default class EditEventPointView extends AbstractStatefulView{
     }
   };
 
-  #getOffersById = (type, pointsId) => {
-
-    const offersById = [];
-
-    if (this.#getOffersByType(type) === false){
-      return [];
-    }
-    this.#getOffersByType(type).forEach((typedOffer) => {
-
-      if(pointsId.some((pointOfferId) => pointOfferId === typedOffer.id)){
-        offersById.push(typedOffer);
-
-      }
-
-    });
-    return offersById;
-  };
-
   #findDestinationInfo = (name) => {
     const destinationsByName = this.allDestinations.find((destination) => destination.name === firstLetterToLowerCase(name));
     if (!(destinationsByName)){
@@ -326,7 +314,12 @@ export default class EditEventPointView extends AbstractStatefulView{
 
   #clickHandler = (evt) =>{
     evt.preventDefault();
-    this.cancelHandler();
+    this.handleCancel();
+  };
+
+  #pointDeleteHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleDelete(EditEventPointView.parseStateToPoint(this._state));
   };
 
   reset(point) {

@@ -1,6 +1,8 @@
 import EditPointView from '../view/edit-event-point-view';
 import EventPointView from '../view/event-point-view';
 import { render, replace, remove } from '../framework/render';
+import { UserAction, UpdateType } from '../const.js';
+import { SortType } from '../const.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -17,13 +19,15 @@ export default class PointPresenter {
   #editPointComponent = null;
   #handleDataChange = null;
   #handleModeChange = null;
+  #currentSortType = null;
 
-  constructor({pointModel, points, eventListComponent, onDataChange, onModeChange }){
+  constructor({pointModel, points, eventListComponent, onDataChange, onModeChange, currentSortType }){
     this.#pointModel = pointModel;
     this.#eventPoints = points;
     this.#eventListComponent = eventListComponent;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
+    this.#currentSortType = currentSortType;
   }
 
 
@@ -72,7 +76,8 @@ export default class PointPresenter {
         this.#handleEditPointClick(state);
         document.removeEventListener('keydown', onDocumentKeyDown);
       },
-      cancelHandler: this.#cancelEditingHandler,
+      handleCancel: this.#cancelEditingHandler,
+      handleDelete: this.#handleDelete,
     });
     if (prevPointComponent === null || prevEditPointComponent === null) {
       render(this.#eventPointComponent, this.#eventListComponent);
@@ -121,12 +126,27 @@ export default class PointPresenter {
   };
 
   #handleEditPointClick = (state) => {
-    this.#handleDataChange(state);
+
+    let isPatchUpdate = UpdateType.MAJOR;
+
+    switch(this.#currentSortType){
+      case SortType.TIME:
+        if (this.#point.startTime !== state.startTime || this.#point.endTime !== state.endTime){
+          isPatchUpdate = UpdateType.MINOR;
+        }
+        break;
+      case SortType.PRICE:
+        if (this.#point.price !== state.price){
+          isPatchUpdate = UpdateType.MINOR;
+        }
+        break;
+    }
+    this.#handleDataChange(UserAction.UPDATE_POINT, isPatchUpdate, state);
     this.#replaceEditPointToPoint();
   };
 
   #handleFavoriteClick = () => {
-    this.#handleDataChange({...this.#point, isFavorite: !this.#point.isFavorite});
+    this.#handleDataChange(UserAction.UPDATE_POINT, UpdateType.MINOR,{...this.#point, isFavorite: !this.#point.isFavorite});
   };
 
   #cancelEditingHandler = () => {
@@ -134,5 +154,9 @@ export default class PointPresenter {
       this.#editPointComponent.reset(this.#point);
       this.#replaceEditPointToPoint();
     }
+  };
+
+  #handleDelete = (point) => {
+    this.#handleDataChange(UserAction.DELETE_POINT, UpdateType.MINOR, point);
   };
 }
