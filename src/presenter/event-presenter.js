@@ -6,7 +6,7 @@ import SortButtonsView from '../view/sort-view.js';
 import NoEventPointView from '../view/no-event-point-view.js';
 import { SortType } from '../const.js';
 import { sortPointPrice, sortPointDay, sortPointTime } from '../utils/sort.js';
-import { UserAction, UpdateType } from '../const.js';
+import { UserAction, UpdateType, FilterType } from '../const.js';
 import {filter} from '../utils/filter.js';
 export default class EventPresenter {
 
@@ -18,7 +18,9 @@ export default class EventPresenter {
   #currentSortType = SortType.DAY;
   #filterButtonsComponent = null;
   #filterModel = null;
-  #noEventPointComponent = new NoEventPointView();
+  #noEventPointComponent = null;
+  #filterType = FilterType.EVERYTHING;
+
   constructor({ listContainer, pointModel, filterModel }) {
     this.#eventListContainer = listContainer;
     this.#pointModel = pointModel;
@@ -30,9 +32,9 @@ export default class EventPresenter {
 
   get points(){
 
-    const filterType = this.#filterModel.filter;
+    this.#filterType = this.#filterModel.filter;
     const points = this.#pointModel.getPoints();
-    const filteredPoints = filter[filterType](points);
+    const filteredPoints = filter[this.#filterType](points);
 
     switch(this.#currentSortType){
       case SortType.DAY:
@@ -51,7 +53,7 @@ export default class EventPresenter {
 
   #renderApp(){
     if (this.points.length === 0) {
-      render(this.#noEventPointComponent, this.#eventListContainer);
+      this.#renderNoEventPointView();
       return;
     }
 
@@ -124,9 +126,12 @@ export default class EventPresenter {
     remove(this.#filterButtonsComponent);
     remove(this.#eventListComponent);
     remove(this.#sortButtonsComponent);
-    remove(this.#noEventPointComponent);
     if (resetSortType) {
       this.#currentSortType = SortType.DEFAULT;
+    }
+
+    if (this.#noEventPointComponent){
+      remove(this.#noEventPointComponent);
     }
   }
 
@@ -173,5 +178,10 @@ export default class EventPresenter {
 
   #renderEventList(){
     render(this.#eventListComponent, this.#eventListContainer);
+  }
+
+  #renderNoEventPointView(){
+    this.#noEventPointComponent = new NoEventPointView({filterType: this.#filterType});
+    render(this.#noEventPointComponent, this.#eventListContainer);
   }
 }
