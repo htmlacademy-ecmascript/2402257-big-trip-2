@@ -1,8 +1,8 @@
-import FilterButtonsView from './view/filter-view.js';
+// import FilterButtonsView from './view/filter-view.js';
 import EventPresenter from './presenter/event-presenter.js';
 import PointsModel from './model/events-model.js';
-import FilterModel from './model/filter-model.js';
-import { render } from './framework/render.js';
+// import FilterModel from './model/filter-model.js';
+// import { render } from './framework/render.js';
 
 // const filters = [
 //   {
