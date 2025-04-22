@@ -9,7 +9,6 @@ const Mode = {
   EDITING: 'EDITING',
 };
 export default class PointPresenter {
-
   #mode = Mode.DEFAULT;
   #pointModel = null;
   #eventPoints = [];
@@ -21,7 +20,14 @@ export default class PointPresenter {
   #handleModeChange = null;
   #currentSortType = null;
 
-  constructor({pointModel, points, eventListComponent, onDataChange, onModeChange, currentSortType }){
+  constructor({
+    pointModel,
+    points,
+    eventListComponent,
+    onDataChange,
+    onModeChange,
+    currentSortType,
+  }) {
     this.#pointModel = pointModel;
     this.#eventPoints = points;
     this.#eventListComponent = eventListComponent;
@@ -30,12 +36,10 @@ export default class PointPresenter {
     this.#currentSortType = currentSortType;
   }
 
-
-  init(point){
-
+  init(point) {
     this.#point = point;
 
-    const onDocumentKeyDown = (evt) =>{
+    const onDocumentKeyDown = (evt) => {
       if (evt.key === 'Escape') {
         evt.preventDefault();
         if (this.#mode !== Mode.DEFAULT) {
@@ -48,11 +52,18 @@ export default class PointPresenter {
     const prevPointComponent = this.#eventPointComponent;
     const prevEditPointComponent = this.#editPointComponent;
 
-    const eventOffers = [...this.#pointModel.getOffersById(point.type, point.offers)];
+    const eventOffers = [
+      ...this.#pointModel.getOffersById(point.type, point.offers),
+    ];
     const eventDestinationsAll = [...this.#pointModel.getDestinations()];
-    const eventDestinations = { ...this.#pointModel.getDestinationsByName(point.name) };
+    const eventDestinations = {
+      ...this.#pointModel.getDestinationsByName(point.name),
+    };
     const eventOffersByType = this.#pointModel.getOffersByType(point.type);
-    const eventCheckedOffers = this.#pointModel.getOffersById(point.type, point.offers);
+    const eventCheckedOffers = this.#pointModel.getOffersById(
+      point.type,
+      point.offers
+    );
 
     this.#eventPointComponent = new EventPointView({
       point: this.#point,
@@ -62,7 +73,7 @@ export default class PointPresenter {
         this.#handlePointClick();
         document.addEventListener('keydown', onDocumentKeyDown);
       },
-      handleFavoriteClick: this.#handleFavoriteClick
+      handleFavoriteClick: this.#handleFavoriteClick,
     });
 
     this.#editPointComponent = new EditPointView({
@@ -94,7 +105,6 @@ export default class PointPresenter {
 
     remove(prevPointComponent);
     remove(prevEditPointComponent);
-
   }
 
   resetView() {
@@ -104,19 +114,18 @@ export default class PointPresenter {
     }
   }
 
-  destroy(){
+  destroy() {
     remove(this.#eventPointComponent);
     remove(this.#editPointComponent);
   }
 
-
-  #replacePointToEditPoint () {
+  #replacePointToEditPoint() {
     replace(this.#editPointComponent, this.#eventPointComponent);
     this.#handleModeChange();
     this.#mode = Mode.EDITING;
   }
 
-  #replaceEditPointToPoint(){
+  #replaceEditPointToPoint() {
     replace(this.#eventPointComponent, this.#editPointComponent);
     this.#mode = Mode.DEFAULT;
   }
@@ -126,17 +135,19 @@ export default class PointPresenter {
   };
 
   #handleEditPointClick = (state) => {
-
     let isPatchUpdate = UpdateType.MAJOR;
 
-    switch(this.#currentSortType){
+    switch (this.#currentSortType) {
       case SortType.TIME:
-        if (this.#point.startTime !== state.startTime || this.#point.endTime !== state.endTime){
+        if (
+          this.#point.startTime !== state.startTime ||
+          this.#point.endTime !== state.endTime
+        ) {
           isPatchUpdate = UpdateType.MINOR;
         }
         break;
       case SortType.PRICE:
-        if (this.#point.price !== state.price){
+        if (this.#point.price !== state.price) {
           isPatchUpdate = UpdateType.MINOR;
         }
         break;
@@ -146,7 +157,10 @@ export default class PointPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#handleDataChange(UserAction.UPDATE_POINT, UpdateType.MINOR,{...this.#point, isFavorite: !this.#point.isFavorite});
+    this.#handleDataChange(UserAction.UPDATE_POINT, UpdateType.MINOR, {
+      ...this.#point,
+      isFavorite: !this.#point.isFavorite,
+    });
   };
 
   #cancelEditingHandler = () => {

@@ -1,5 +1,10 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { humanizeEventDate, humanizeEventTime, capitalizeFirstLetter, getEventTimeDuration } from '../utils/date.js';
+import {
+  humanizeEventDate,
+  humanizeEventTime,
+  capitalizeFirstLetter,
+  getEventTimeDuration,
+} from '../utils/date.js';
 
 function createPointOffersTemplate(title, price) {
   return ` <li class="event__offer">
@@ -41,7 +46,7 @@ function createEventPointTemplate(point, offers) {
                     &mdash;
                     <time class="event__end-time" datetime="${eventEndDate}">${eventEndTime}</time>
                   </p>
-                  <p class="event__duration">${getEventTimeDuration(startTime ,endTime)}</p>
+                  <p class="event__duration">${getEventTimeDuration(startTime,endTime)}</p>
                 </div>
                 <p class="event__price">
                   &euro;&nbsp;<span class="event__price-value">${price}</span>
@@ -65,7 +70,7 @@ function createEventPointTemplate(point, offers) {
             </li>`;
 }
 
-export default class EventPointView extends AbstractView{
+export default class EventPointView extends AbstractView {
   #handleEditClick = null;
   #handleFavoriteClick = null;
 
@@ -75,7 +80,10 @@ export default class EventPointView extends AbstractView{
     this.offers = offers;
     this.point = point;
     this.rollUpButtonElement.addEventListener('click', this.#clickHandler);
-    this.favoriteButtonClick.addEventListener('click', this.#favoriteButtonClickHandler);
+    this.favoriteButtonClick.addEventListener(
+      'click',
+      this.#favoriteButtonClickHandler
+    );
     this.#handleFavoriteClick = handleFavoriteClick;
   }
 
@@ -87,7 +95,7 @@ export default class EventPointView extends AbstractView{
     return this.element.querySelector('.event__rollup-btn');
   }
 
-  get favoriteButtonClick(){
+  get favoriteButtonClick() {
     return this.element.querySelector('.event__favorite-btn');
   }
 
