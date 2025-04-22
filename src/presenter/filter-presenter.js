@@ -9,10 +9,11 @@ export default class FilterPresenter {
 
   #filterComponent = null;
 
-  constructor({filterContainer, filterModel, pointModel}) {
+  constructor({filterContainer, filterModel, pointModel, points}) {
     this.#filterContainer = filterContainer;
     this.#filterModel = filterModel;
     this.#pointModel = pointModel;
+    this.points = points;
 
     this.#pointModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -31,9 +32,9 @@ export default class FilterPresenter {
     this.#filterComponent = new FilterButtonsView({
       filters,
       currentFilterType: this.#filterModel.filter,
-      onFilterTypeChange: this.#handleFilterTypeChange
+      onFilterTypeChange: this.#handleFilterTypeChange,
+      points: this.#pointModel.getPoints(),
     });
-
     if (prevFilterComponent === null) {
       render(this.#filterComponent, this.#filterContainer);
       return;

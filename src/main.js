@@ -9,22 +9,24 @@ const filtersButtonsContainer = document.querySelector(
   '.trip-controls__filters'
 );
 
-const addPointButtonContainer = document.querySelector('.trip-main');
-
 const pointModel = new PointsModel();
 const filterModel = new FilterModel();
-const filterPresenter = new FilterPresenter({
-  filterContainer: filtersButtonsContainer,
-  filterModel,
-  pointModel,
-});
 
+const addPointButtonContainer = document.querySelector('.trip-main');
 const eventsContainer = document.querySelector('.trip-events');
+
 const eventPresenter = new EventPresenter({
   listContainer: eventsContainer,
   pointModel,
   filterModel,
   onNewPointDestroy: handleNewPointFormClose,
+});
+
+const filterPresenter = new FilterPresenter({
+  filterContainer: filtersButtonsContainer,
+  filterModel,
+  pointModel,
+  points: eventPresenter.points,
 });
 
 const AddPointButtonComponent = new addNewEventButtonView({
