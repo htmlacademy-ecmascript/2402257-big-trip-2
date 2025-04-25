@@ -8,6 +8,7 @@ const Mode = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING',
 };
+
 export default class PointPresenter {
   #mode = Mode.DEFAULT;
   #pointModel = null;
@@ -151,6 +152,10 @@ export default class PointPresenter {
           isPatchUpdate = UpdateType.MINOR;
         }
         break;
+      case SortType.DAY:
+        if (this.#point.startTime !== state.startTime){
+          isPatchUpdate = UpdateType.MINOR;
+        }
     }
     this.#handleDataChange(UserAction.UPDATE_POINT, isPatchUpdate, state);
     this.#replaceEditPointToPoint();

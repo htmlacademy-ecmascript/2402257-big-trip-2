@@ -28,6 +28,7 @@ export default class EventPresenter {
     this.#filterModel = filterModel;
 
     this.#newPointPresenter = new NewPointPresenter({
+      pointModel: this.#pointModel,
       pointListContainer: this.#eventListComponent.element,
       onDataChange: this.#handleViewAction,
       onDestroy: onNewPointDestroy,
@@ -61,7 +62,6 @@ export default class EventPresenter {
       this.#renderNoEventPointView();
       return;
     }
-
     this.#renderSortView();
     this.#renderEventList();
     this.#renderPoints();
@@ -130,7 +130,6 @@ export default class EventPresenter {
     this.#newPointPresenter.destroy();
 
     remove(this.#filterButtonsComponent);
-    remove(this.#eventListComponent);
     remove(this.#sortButtonsComponent);
     if (resetSortType) {
       this.#currentSortType = SortType.DEFAULT;

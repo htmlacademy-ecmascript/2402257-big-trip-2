@@ -3,8 +3,9 @@ import { capitalizeFirstLetter, localizeDateFormat, firstLetterToLowerCase } fro
 import { EVENT_TYPES } from '../const.js';
 import { mockEventPointOffers } from '../mock/offers';
 import flatpickr from 'flatpickr';
-
+import he from 'he';
 import 'flatpickr/dist/flatpickr.min.css';
+
 
 const BLANCK_POINT = {
   type: 'flight',
@@ -143,7 +144,7 @@ function createAddPointTemplate({type, name, startTime, endTime, price , allOffe
                     <label class="event__label  event__type-output" for="event-destination-1">
                       ${type}
                     </label>
-                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${capitalizedName}" list="destination-list-1">
+                    <input class="event__input  event__input--destination" id="event-destination-1" type="select" name="event-destination" value="${he.encode(capitalizedName)}" list="destination-list-1">
                     <datalist id="destination-list-1">
                       ${initDestinationListOptions(allPoints)}
                     </datalist>
@@ -161,11 +162,11 @@ function createAddPointTemplate({type, name, startTime, endTime, price , allOffe
                       <span class="visually-hidden">Price</span>
                       &euro;
                     </label>
-                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+                    <input class="event__input  event__input--price" id="event-price-1" type="number" pattern="^[ 0-9]+$" name="event-price" value="${price}" min="1">
                   </div>
 
                   <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-                  <button class="event__reset-btn" type="reset">Delete</button>
+                  <button class="event__reset-btn" type="reset">Cancel</button>
                   <button class="event__rollup-btn" type="button">
                     <span class="visually-hidden">Open event</span>
                   </button>
@@ -181,18 +182,16 @@ function createAddPointTemplate({type, name, startTime, endTime, price , allOffe
 
 export default class AddEventPointView extends AbstractStatefulView{
   #handleSubmit = null;
-  #handleDelete = null;
   #datepickerStart = null;
   #datepickerEnd = null;
 
-  constructor({point = BLANCK_POINT, allOffers = [], checkedOffers = [], destinationInfo = {}, allDestinations = [], allPoints = [], onSubmit, handleCancel, handleDelete }){
+  constructor({point = BLANCK_POINT, allOffers = [], checkedOffers = [], destinationInfo = {}, allDestinations = [], allPoints = [], onSubmit, handleCancel }){
     super();
     this.pointData = { ...point, allOffers, checkedOffers, destinationInfo, allPoints };
     this.allDestinations = allDestinations;
     this.handleCancel = handleCancel;
     this._setState(AddEventPointView.parsePointToState(this.pointData));
     this.#handleSubmit = onSubmit;
-    this.#handleDelete = handleDelete;
     this._restoreHandlers();
   }
 
@@ -201,12 +200,18 @@ export default class AddEventPointView extends AbstractStatefulView{
     this.rollUpButton.addEventListener('click', this.#clickHandler);
     this.pointTypeParentElement.addEventListener('change', this.#pointTypeHandler);
     this.pointDestinationTextInput.addEventListener('change', this.#pointDestinationHandler);
-    this.deleteButton.addEventListener('click', this.#pointDeleteHandler);
+    this.cancelButton.addEventListener('click', this.#pointCancelHandler);
+    this.pointPriceInput.addEventListener('change', this.#pointPriceHandler);
+    this.eventOffersContainer.addEventListener('click', this.#eventOffersHandler);
     this.#setDatepicker();
   }
 
   get saveButton(){
     return this.element.querySelector('.event--edit');
+  }
+
+  get pointPriceInput(){
+    return this.element.querySelector('.event__input--price');
   }
 
   get rollUpButton(){
@@ -221,8 +226,12 @@ export default class AddEventPointView extends AbstractStatefulView{
     return this.element.querySelector('.event__input--destination');
   }
 
-  get deleteButton(){
+  get cancelButton(){
     return this.element.querySelector('.event__reset-btn');
+  }
+
+  get eventOffersContainer(){
+    return this.element.querySelector('.event__details');
   }
 
   get template() {
@@ -264,7 +273,7 @@ export default class AddEventPointView extends AbstractStatefulView{
   };
 
   #setDatepicker(){
-    if (this._state.startTime && this._state.endTime){
+    if (this._state.startTime && this._state.endTime || this._state.startTime === null || this._state.endTime === null){
       this.#datepickerStart = flatpickr(
         this.element.querySelector('.event__input--time-1'),
         {
@@ -289,7 +298,19 @@ export default class AddEventPointView extends AbstractStatefulView{
   }
 
   #pointTypeHandler = (evt) => {
-    this.updateElement({type: evt.target.value, offers: [], checkedOffers: [], allOffers: this.#getOffersByType(evt.target.value) });
+    this.updateElement({type: evt.target.value, allOffers: this.#getOffersByType(evt.target.value), offers: [], checkedOffers: []});
+  };
+
+  #pointPriceHandler = (evt) => {
+    this.updateElement({price: evt.target.value});
+  };
+
+  #eventOffersHandler = (evt) => {
+    if (evt.target.classList.contains('event__offer-checkbox')){
+      this._setState({offers: [...this._state.offers, +evt.target.id]});
+      this._setState({allOffers: this.#getOffersByType(this._state.type)});
+      this._setState({checkedOffers: this._state.allOffers.filter((offer) => this._state.offers.includes(offer.id))});
+    }
   };
 
   #pointDestinationHandler = (evt) => {
@@ -323,12 +344,12 @@ export default class AddEventPointView extends AbstractStatefulView{
 
   #clickHandler = (evt) =>{
     evt.preventDefault();
-    this.handleCancel();
+    this.handleCancel(AddEventPointView.parseStateToPoint(this._state));
   };
 
-  #pointDeleteHandler = (evt) => {
+  #pointCancelHandler = (evt) => {
     evt.preventDefault();
-    this.#handleDelete(AddEventPointView.parseStateToPoint(this._state));
+    this.handleCancel(AddEventPointView.parseStateToPoint(this._state));
   };
 
   reset(point) {

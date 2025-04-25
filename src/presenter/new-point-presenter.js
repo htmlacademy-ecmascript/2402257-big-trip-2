@@ -3,6 +3,7 @@ import AddEventPointView from '../view/add-event-point-view.js';
 import { UserAction, UpdateType } from '../const.js';
 import { getRandomNumber } from '../utils/random.js';
 
+const BLANCK_TYPE = 'flight';
 export default class NewPointPresenter {
   #pointListContainer = null;
   #handleDataChange = null;
@@ -10,10 +11,12 @@ export default class NewPointPresenter {
 
   #addEventPointComponent = null;
 
-  constructor({ pointListContainer, onDataChange, onDestroy }) {
+  constructor({ pointListContainer, onDataChange, onDestroy, pointModel }) {
     this.#pointListContainer = pointListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleDestroy = onDestroy;
+    this.pointModel = pointModel;
+
   }
 
   init() {
@@ -23,7 +26,9 @@ export default class NewPointPresenter {
 
     this.#addEventPointComponent = new AddEventPointView({
       onSubmit: this.#handleFormSubmit,
-      handleDelete: this.#handleDeleteClick,
+      handleCancel: this.#handleCancelClick,
+      allDestinations: this.pointModel.getDestinations(),
+      allOffers: this.pointModel.getOffersByType(BLANCK_TYPE),
     });
     render(this.#addEventPointComponent,this.#pointListContainer,RenderPosition.AFTERBEGIN);
 
@@ -54,7 +59,7 @@ export default class NewPointPresenter {
     this.destroy();
   };
 
-  #handleDeleteClick = () => {
+  #handleCancelClick = () => {
     this.destroy();
   };
 

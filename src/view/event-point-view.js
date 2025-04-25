@@ -5,7 +5,7 @@ import {
   capitalizeFirstLetter,
   getEventTimeDuration,
 } from '../utils/date.js';
-
+import he from 'he';
 function createPointOffersTemplate(title, price) {
   return ` <li class="event__offer">
               <span class="event__offer-title">${title}</span>
@@ -39,7 +39,7 @@ function createEventPointTemplate(point, offers) {
                 <div class="event__type">
                   <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
                 </div>
-                <h3 class="event__title">${type} ${capitalizedName}</h3>
+                <h3 class="event__title">${type} ${he.encode(capitalizedName)}</h3>
                 <div class="event__schedule">
                   <p class="event__time">
                     <time class="event__start-time" datetime="${eventStartDate}">${eventStartTime}</time>

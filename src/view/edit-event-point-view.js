@@ -3,7 +3,7 @@ import { capitalizeFirstLetter, localizeDateFormat, firstLetterToLowerCase } fro
 import { EVENT_TYPES } from '../const.js';
 import { mockEventPointOffers } from '../mock/offers';
 import flatpickr from 'flatpickr';
-
+import he from 'he';
 import 'flatpickr/dist/flatpickr.min.css';
 
 const checked = 'checked';
@@ -134,7 +134,7 @@ function createEditPointTemplate({type, name, startTime, endTime, price , allOff
                     <label class="event__label  event__type-output" for="event-destination-1">
                       ${type}
                     </label>
-                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${capitalizedName}" list="destination-list-1">
+                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(capitalizedName)}" list="destination-list-1">
                     <datalist id="destination-list-1">
                       ${initDestinationListOptions(allPoints)}
                     </datalist>
@@ -152,7 +152,7 @@ function createEditPointTemplate({type, name, startTime, endTime, price , allOff
                       <span class="visually-hidden">Price</span>
                       &euro;
                     </label>
-                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+                    <input class="event__input  event__input--price" id="event-price-1" type="number" pattern="^[ 0-9]+$" name="event-price" value="${price}" min="1">
                   </div>
 
                   <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -193,6 +193,8 @@ export default class EditEventPointView extends AbstractStatefulView{
     this.pointTypeParentElement.addEventListener('change', this.#pointTypeHandler);
     this.pointDestinationTextInput.addEventListener('change', this.#pointDestinationHandler);
     this.deleteButton.addEventListener('click', this.#pointDeleteHandler);
+    this.pointPriceInput.addEventListener('change', this.#pointPriceHandler);
+    this.eventOffersContainer.addEventListener('click', this.#eventOffersHandler);
     this.#setDatepicker();
   }
 
@@ -216,8 +218,16 @@ export default class EditEventPointView extends AbstractStatefulView{
     return this.element.querySelector('.event__reset-btn');
   }
 
+  get pointPriceInput(){
+    return this.element.querySelector('.event__input--price');
+  }
+
   get template() {
     return createEditPointTemplate(this._state);
+  }
+
+  get eventOffersContainer(){
+    return this.element.querySelector('.event__details');
   }
 
   static parsePointToState(point){
@@ -253,6 +263,7 @@ export default class EditEventPointView extends AbstractStatefulView{
       endTime: userEndDate
     });
   };
+
 
   #setDatepicker(){
     if (this._state.startTime && this._state.endTime){
@@ -317,6 +328,10 @@ export default class EditEventPointView extends AbstractStatefulView{
     this.handleCancel();
   };
 
+  #pointPriceHandler = (evt) => {
+    this.updateElement({price: evt.target.value});
+  };
+
   #pointDeleteHandler = (evt) => {
     evt.preventDefault();
     this.#handleDelete(EditEventPointView.parseStateToPoint(this._state));
@@ -330,4 +345,15 @@ export default class EditEventPointView extends AbstractStatefulView{
     );
   }
 
+  #eventOffersHandler = (evt) => {
+    if (evt.target.classList.contains('event__offer-checkbox')){
+      if (this._state.offers.includes(+evt.target.id)){
+        this._state.offers = this._state.offers.filter((offer) => offer !== +evt.target.id);
+      } else {
+        this._state.offers.push(+evt.target.id);
+      }
+      this._setState({allOffers: this.#getOffersByType(this._state.type)});
+      this._setState({checkedOffers: this._state.allOffers.filter((offer) => this._state.offers.includes(offer.id))});
+    }
+  };
 }
