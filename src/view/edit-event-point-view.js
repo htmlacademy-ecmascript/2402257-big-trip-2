@@ -188,7 +188,7 @@ export default class EditEventPointView extends AbstractStatefulView{
   }
 
   _restoreHandlers(){
-    this.saveButton.addEventListener('submit', this.#submitHandler);
+    this.formElement.addEventListener('submit', this.#submitHandler);
     this.rollUpButton.addEventListener('click', this.#clickHandler);
     this.pointTypeParentElement.addEventListener('change', this.#pointTypeHandler);
     this.pointDestinationTextInput.addEventListener('change', this.#pointDestinationHandler);
@@ -198,8 +198,12 @@ export default class EditEventPointView extends AbstractStatefulView{
     this.#setDatepicker();
   }
 
-  get saveButton(){
+  get formElement(){
     return this.element.querySelector('.event--edit');
+  }
+
+  get saveButton(){
+    return this.element.querySelector('.event__save-btn');
   }
 
   get rollUpButton(){
@@ -349,11 +353,12 @@ export default class EditEventPointView extends AbstractStatefulView{
     if (evt.target.classList.contains('event__offer-checkbox')){
       if (this._state.offers.includes(+evt.target.id)){
         this._state.offers = this._state.offers.filter((offer) => offer !== +evt.target.id);
+
       } else {
         this._state.offers.push(+evt.target.id);
+        this._setState({allOffers: this.#getOffersByType(this._state.type)});
+        this._setState({checkedOffers: this._state.allOffers.filter((offer) => this._state.offers.includes(offer.id))});
       }
-      this._setState({allOffers: this.#getOffersByType(this._state.type)});
-      this._setState({checkedOffers: this._state.allOffers.filter((offer) => this._state.offers.includes(offer.id))});
     }
   };
 }

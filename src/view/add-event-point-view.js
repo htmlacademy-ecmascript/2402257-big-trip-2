@@ -2,6 +2,7 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { capitalizeFirstLetter, localizeDateFormat, firstLetterToLowerCase } from '../utils/date.js';
 import { EVENT_TYPES } from '../const.js';
 import { mockEventPointOffers } from '../mock/offers';
+import { mockEventPointDestinations } from '../mock/destination.js';
 import flatpickr from 'flatpickr';
 import he from 'he';
 import 'flatpickr/dist/flatpickr.min.css';
@@ -19,6 +20,20 @@ const BLANCK_POINT = {
 
 const checked = 'checked';
 const unchecked = 'unchecked';
+
+
+function validateName(name){
+  return mockEventPointDestinations.some((destination) => destination.name === firstLetterToLowerCase(name));
+}
+
+function checkIfValif(name, startTime, endTime) {
+
+  if (name === '' || startTime === null || endTime === null || validateName(name) === false) {
+    return 'disabled';
+  }
+  return '';
+
+}
 
 function createOffersTemplate(title, price, id, name, checkStatus) {
   return ` <div class="event__offer-selector">
@@ -165,7 +180,7 @@ function createAddPointTemplate({type, name, startTime, endTime, price , allOffe
                     <input class="event__input  event__input--price" id="event-price-1" type="number" pattern="^[ 0-9]+$" name="event-price" value="${price}" min="1">
                   </div>
 
-                  <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+                  <button class="event__save-btn  btn  btn--blue" type="submit" ${checkIfValif(name, startTime, endTime)}>Save</button>
                   <button class="event__reset-btn" type="reset">Cancel</button>
                   <button class="event__rollup-btn" type="button">
                     <span class="visually-hidden">Open event</span>
@@ -196,7 +211,7 @@ export default class AddEventPointView extends AbstractStatefulView{
   }
 
   _restoreHandlers(){
-    this.saveButton.addEventListener('submit', this.#submitHandler);
+    this.formElement.addEventListener('submit', this.#submitHandler);
     this.rollUpButton.addEventListener('click', this.#clickHandler);
     this.pointTypeParentElement.addEventListener('change', this.#pointTypeHandler);
     this.pointDestinationTextInput.addEventListener('change', this.#pointDestinationHandler);
@@ -206,8 +221,12 @@ export default class AddEventPointView extends AbstractStatefulView{
     this.#setDatepicker();
   }
 
-  get saveButton(){
+  get formElement(){
     return this.element.querySelector('.event--edit');
+  }
+
+  get saveButton(){
+    return this.element.querySelector('.event__save-btn');
   }
 
   get pointPriceInput(){
@@ -307,9 +326,14 @@ export default class AddEventPointView extends AbstractStatefulView{
 
   #eventOffersHandler = (evt) => {
     if (evt.target.classList.contains('event__offer-checkbox')){
-      this._setState({offers: [...this._state.offers, +evt.target.id]});
-      this._setState({allOffers: this.#getOffersByType(this._state.type)});
-      this._setState({checkedOffers: this._state.allOffers.filter((offer) => this._state.offers.includes(offer.id))});
+      if (this._state.offers.includes(+evt.target.id)){
+        this._state.offers = this._state.offers.filter((offer) => offer !== +evt.target.id);
+
+      } else {
+        this._state.offers.push(+evt.target.id);
+        this._setState({allOffers: this.#getOffersByType(this._state.type)});
+        this._setState({checkedOffers: this._state.allOffers.filter((offer) => this._state.offers.includes(offer.id))});
+      }
     }
   };
 

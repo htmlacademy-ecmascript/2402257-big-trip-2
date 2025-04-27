@@ -112,7 +112,7 @@ export default class EventPresenter {
         this.#renderApp();
         break;
       case UpdateType.MAJOR:
-        this.#clearEventList({ resetSortType: true });
+        this.#clearEventList({ resetSortType: false });
         this.#renderApp();
         break;
     }
@@ -132,7 +132,7 @@ export default class EventPresenter {
     remove(this.#filterButtonsComponent);
     remove(this.#sortButtonsComponent);
     if (resetSortType) {
-      this.#currentSortType = SortType.DEFAULT;
+      this.#currentSortType = SortType.DAY;
     }
 
     if (this.#noEventPointComponent) {
