@@ -118,12 +118,12 @@ function initOffersTemplate(allOffers, offers, isDisabled) {
       const isChecked = offers.some((offer) => offer.id === currentOffer.id);
 
       return createOffersTemplate(
-        isDisabled,
         currentOffer.title,
         currentOffer.price,
         currentOffer.id,
         currentOffer.name,
-        isChecked ? checked : unchecked
+        isChecked ? checked : unchecked,
+        isDisabled,
       );
     }).join('')}
               </div>
@@ -131,7 +131,7 @@ function initOffersTemplate(allOffers, offers, isDisabled) {
 }
 
 function createAddPointTemplate({type, startTime, endTime, price , allOffers, checkedOffers, destinationInfo, allDestinations, allTypes, isSaving, isDisabled}) {
-console.log(isSaving, isDisabled)
+  console.log(isDisabled);
   const eventStartDate = localizeDateFormat(startTime);
   const eventEndDate = localizeDateFormat(endTime);
 
@@ -157,7 +157,7 @@ console.log(isSaving, isDisabled)
                     <label class="event__label  event__type-output" for="event-destination-1">
                       ${type}
                     </label>
-                    <input class="event__input  event__input--destination" id="event-destination-1" type="select" name="event-destination" value="${he.encode(destinationInfo.name)}" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
+                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(destinationInfo.name)}" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
                     <datalist id="destination-list-1">
                       ${initDestinationListOptions(allDestinations)}
                     </datalist>

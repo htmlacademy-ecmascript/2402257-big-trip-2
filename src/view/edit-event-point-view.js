@@ -119,7 +119,7 @@ function initOffersTemplate(allOffers, offers, isDisabled) {
 }
 
 function createEditPointTemplate({type, startTime, endTime, price , allOffers, checkedOffers, destinationInfo , allDestinations, allTypes, isSaving, isDeleting, isDisabled}) {
-console.log(isDisabled);
+
   const eventStartDate = localizeDateFormat(startTime);
   const eventEndDate = localizeDateFormat(endTime);
 
