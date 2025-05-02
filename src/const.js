@@ -13,4 +13,18 @@ const SortType = {
   PRICE: 'price'
 };
 
-export { EVENT_TYPES, FilterType, SortType };
+const UserAction = {
+  UPDATE_POINT: 'UPDATE_POINT',
+  ADD_POINT: 'ADD_POINT',
+  DELETE_POINT: 'DELETE_POINT',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+  INIT: 'INIT',
+};
+
+
+export { EVENT_TYPES, FilterType, SortType, UserAction, UpdateType };
