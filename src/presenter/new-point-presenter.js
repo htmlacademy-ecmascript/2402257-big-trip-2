@@ -1,7 +1,6 @@
 import { remove, render, RenderPosition } from '../framework/render.js';
 import AddEventPointView from '../view/add-event-point-view.js';
 import { UserAction, UpdateType } from '../const.js';
-import { getRandomNumber } from '../utils/random.js';
 
 const BLANCK_TYPE = 'flight';
 export default class NewPointPresenter {
@@ -24,16 +23,40 @@ export default class NewPointPresenter {
       return;
     }
 
+    const allTypesOffers = this.pointModel.getOffers();
+    const allTypes = this.pointModel.getTypes();
+
     this.#addEventPointComponent = new AddEventPointView({
       onSubmit: this.#handleFormSubmit,
       handleCancel: this.#handleCancelClick,
       allDestinations: this.pointModel.getDestinations(),
       allOffers: this.pointModel.getOffersByType(BLANCK_TYPE),
+      allTypesOffers: allTypesOffers,
+      allTypes: allTypes,
     });
     render(this.#addEventPointComponent,this.#pointListContainer,RenderPosition.AFTERBEGIN);
 
     document.addEventListener('keydown', this.#escKeyDownHandler);
   }
+
+  setSaving() {
+    this.#addEventPointComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this.#addEventPointComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+      });
+    };
+
+    this.#addEventPointComponent.shake(resetFormState);
+  }
+
 
   destroy() {
     if (this.#addEventPointComponent === null) {
@@ -52,9 +75,7 @@ export default class NewPointPresenter {
     this.#handleDataChange(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
-      // Пока у нас нет сервера, который бы после сохранения
-      // выдывал честный id задачи, нам нужно позаботиться об этом самим
-      { id: getRandomNumber(), ...point }
+      point,
     );
     this.destroy();
   };

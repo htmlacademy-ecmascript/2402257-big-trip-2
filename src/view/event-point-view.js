@@ -24,15 +24,15 @@ function parseOffersInfo(offers) {
     .join('');
 }
 
-function createEventPointTemplate(point, offers) {
-  const { type, name, startTime, endTime, price, isFavorite } = point;
+function createEventPointTemplate(point, offers, destinationInfo) {
+  const { type, startTime, endTime, price, isFavorite } = point;
 
   const eventStartDate = humanizeEventDate(startTime);
   const eventEndDate = humanizeEventDate(endTime);
   const eventStartTime = humanizeEventTime(startTime);
   const eventEndTime = humanizeEventTime(endTime);
 
-  const capitalizedName = capitalizeFirstLetter(name);
+  const capitalizedName = capitalizeFirstLetter(destinationInfo.name);
   return `<li class="trip-events__item">
               <div class="event">
                 <time class="event__date" datetime="2019-03-18">${eventStartDate}</time>
@@ -74,11 +74,12 @@ export default class EventPointView extends AbstractView {
   #handleEditClick = null;
   #handleFavoriteClick = null;
 
-  constructor({ point, offers, onEditClick, handleFavoriteClick }) {
+  constructor({ point, offers, onEditClick, handleFavoriteClick, destinationInfo }) {
     super();
     this.#handleEditClick = onEditClick;
     this.offers = offers;
     this.point = point;
+    this.destinationInfo = destinationInfo;
     this.rollUpButtonElement.addEventListener('click', this.#clickHandler);
     this.favoriteButtonClick.addEventListener(
       'click',
@@ -88,7 +89,7 @@ export default class EventPointView extends AbstractView {
   }
 
   get template() {
-    return createEventPointTemplate(this.point, this.offers);
+    return createEventPointTemplate(this.point, this.offers, this.destinationInfo);
   }
 
   get rollUpButtonElement() {

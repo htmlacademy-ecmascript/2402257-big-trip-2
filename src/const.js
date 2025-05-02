@@ -14,15 +14,16 @@ const SortType = {
 };
 
 const UserAction = {
-  UPDATE_POINT: 'UPDATE_TASK',
-  ADD_POINT: 'ADD_TASK',
-  DELETE_POINT: 'DELETE_TASK',
+  UPDATE_POINT: 'UPDATE_POINT',
+  ADD_POINT: 'ADD_POINT',
+  DELETE_POINT: 'DELETE_POINT',
 };
 
 const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };
 
 

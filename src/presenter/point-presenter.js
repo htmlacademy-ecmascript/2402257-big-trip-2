@@ -65,11 +65,13 @@ export default class PointPresenter {
       point.type,
       point.offers
     );
+    const allTypesOffers = this.#pointModel.getOffers();
+    const allTypes = this.#pointModel.getTypes();
 
     this.#eventPointComponent = new EventPointView({
       point: this.#point,
       offers: eventOffers,
-      destinations: eventDestinations,
+      destinationInfo: eventDestinations,
       onEditClick: () => {
         this.#handlePointClick();
         document.addEventListener('keydown', onDocumentKeyDown);
@@ -80,6 +82,8 @@ export default class PointPresenter {
     this.#editPointComponent = new EditPointView({
       point: this.#point,
       allOffers: eventOffersByType,
+      allTypesOffers: allTypesOffers,
+      allTypes: allTypes,
       checkedOffers: eventCheckedOffers,
       destinationInfo: eventDestinations,
       allDestinations: eventDestinationsAll,
@@ -101,7 +105,8 @@ export default class PointPresenter {
     }
 
     if (this.#mode === Mode.EDITING) {
-      replace(this.#editPointComponent, prevEditPointComponent);
+      replace(this.#eventPointComponent, prevEditPointComponent);
+      this.#mode = Mode.DEFAULT;
     }
 
     remove(prevPointComponent);
@@ -118,6 +123,41 @@ export default class PointPresenter {
   destroy() {
     remove(this.#eventPointComponent);
     remove(this.#editPointComponent);
+  }
+
+  setSaving() {
+    if (this.#mode === Mode.EDITING) {
+      this.#editPointComponent.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
+  }
+
+  setDeleting() {
+    if (this.#mode === Mode.EDITING) {
+      this.#editPointComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
+  }
+
+  setAborting() {
+    if (this.#mode === Mode.DEFAULT) {
+      this.#eventPointComponent.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#editPointComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#editPointComponent.shake(resetFormState);
   }
 
   #replacePointToEditPoint() {
@@ -158,7 +198,7 @@ export default class PointPresenter {
         }
     }
     this.#handleDataChange(UserAction.UPDATE_POINT, isPatchUpdate, state);
-    this.#replaceEditPointToPoint();
+    //this.#replaceEditPointToPoint();
   };
 
   #handleFavoriteClick = () => {

@@ -8,6 +8,14 @@ import { sortPointPrice, sortPointDay, sortPointTime } from '../utils/sort.js';
 import { UserAction, UpdateType, FilterType } from '../const.js';
 import { filter } from '../utils/filter.js';
 import NewPointPresenter from './new-point-presenter.js';
+import LoadingView from '../view/loading-view.js';
+import { RenderPosition } from '../framework/render.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
+
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 
 export default class EventPresenter {
   #eventListContainer = null;
@@ -21,6 +29,12 @@ export default class EventPresenter {
   #noEventPointComponent = null;
   #filterType = FilterType.EVERYTHING;
   #newPointPresenter = null;
+  #loadingComponent = new LoadingView();
+  #isLoading = true;
+  #uiBlocker = new UiBlocker({
+    lowerLimit: TimeLimit.LOWER_LIMIT,
+    upperLimit: TimeLimit.UPPER_LIMIT
+  });
 
   constructor({ listContainer, pointModel, filterModel, onNewPointDestroy }) {
     this.#eventListContainer = listContainer;
@@ -58,10 +72,16 @@ export default class EventPresenter {
   }
 
   #renderApp() {
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
     if (this.points.length === 0) {
       this.#renderNoEventPointView();
       return;
     }
+
     this.#renderSortView();
     this.#renderEventList();
     this.#renderPoints();
@@ -87,18 +107,37 @@ export default class EventPresenter {
     });
   }
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
+
     switch (actionType) {
       case UserAction.UPDATE_POINT:
-        this.#pointModel.updatePoints(updateType, update);
+        this.#pointPresenters.get(update.id).setSaving();
+        try {
+          await this.#pointModel.updatePoints(updateType, update);
+        } catch(err) {
+          this.#pointPresenters.get(update.id).setAborting();
+        }
         break;
       case UserAction.ADD_POINT:
+        this.#newPointPresenter.setSaving();
         this.#pointModel.addPoint(updateType, update);
+        try {
+          await this.#pointModel.addPoint(updateType, update);
+        } catch(err) {
+          this.#newPointPresenter.setAborting();
+        }
         break;
       case UserAction.DELETE_POINT:
-        this.#pointModel.deletePoint(updateType, update);
+        this.#pointPresenters.get(update.id).setDeleting();
+        try {
+          await this.#pointModel.deletePoint(updateType, update);
+        } catch(err) {
+          this.#pointPresenters.get(update.id).setAborting();
+        }
         break;
     }
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {
@@ -113,6 +152,11 @@ export default class EventPresenter {
         break;
       case UpdateType.MAJOR:
         this.#clearEventList({ resetSortType: false });
+        this.#renderApp();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.#renderApp();
         break;
     }
@@ -131,6 +175,8 @@ export default class EventPresenter {
 
     remove(this.#filterButtonsComponent);
     remove(this.#sortButtonsComponent);
+    remove(this.#loadingComponent);
+
     if (resetSortType) {
       this.#currentSortType = SortType.DAY;
     }
@@ -138,6 +184,10 @@ export default class EventPresenter {
     if (this.#noEventPointComponent) {
       remove(this.#noEventPointComponent);
     }
+  }
+
+  #renderLoading() {
+    render(this.#loadingComponent, this.#eventListContainer, RenderPosition.AFTERBEGIN);
   }
 
   #handleModeChange = () => {
