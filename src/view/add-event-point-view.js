@@ -16,7 +16,7 @@ const BLANCK_POINT = {
 };
 
 const checked = 'checked';
-const unchecked = 'unchecked';
+const unchecked = '';
 
 
 function validateName(name, allDestinations){
@@ -116,7 +116,6 @@ function initOffersTemplate(allOffers, offers, isDisabled) {
       ${allOffers
     .map((currentOffer) => {
       const isChecked = offers.some((offer) => offer.id === currentOffer.id);
-
       return createOffersTemplate(
         currentOffer.title,
         currentOffer.price,

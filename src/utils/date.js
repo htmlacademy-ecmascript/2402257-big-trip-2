@@ -5,7 +5,7 @@ import localizedFormat from 'dayjs/plugin/localizedFormat';
 dayjs.extend(localizedFormat);
 dayjs.extend(duration);
 
-const DATE_FORMAT_POINT = 'D MMMM';
+const DATE_FORMAT_POINT = 'MMM D';
 const DATE_FORMAT_EDIT_POINT = 'DD/MM/YY';
 const TIME_FORMAT = 'HH:mm';
 
@@ -40,32 +40,38 @@ function firstLetterToLowerCase(str) {
   return str.charAt(0).toLowerCase() + str.slice(1);
 }
 
-function formatDuration(durationObj) {
-  const days = durationObj.days();
-  const hours = durationObj.hours();
-  const minutes = durationObj.minutes();
+function getEventTimeDuration(startTime, endTime) {
+  const start = dayjs(startTime, 'DD/MM/YY HH:mm');
+  const end = dayjs(endTime, 'DD/MM/YY HH:mm');
 
-  if (days > 0) {
-    return `${days.toString().padStart(2, '0')}D ${hours.toString().padStart(2, '0')}H ${minutes.toString().padStart(2, '0')}M`;
-  } else if (hours > 0) {
-
-    return `${hours.toString().padStart(2, '0')}H ${minutes.toString().padStart(2, '0')}M`;
-  } else {
-    return `${minutes.toString().padStart(2, '0')}M`;
+  if (!start.isValid() || !end.isValid() || end.isBefore(start)) {
+    return '0M';
   }
+
+  const totalMinutes = end.diff(start, 'minute');
+  const days = Math.floor(totalMinutes / (60 * 24));
+  const remainingMinutes = totalMinutes % (60 * 24);
+  const hours = Math.floor(remainingMinutes / 60);
+  const minutes = remainingMinutes % 60;
+
+  return formatDuration(days, hours, minutes);
 }
 
+function formatDuration(days, hours, minutes) {
+  const parts = [];
 
-function getEventTimeDuration(startTime, endTime) {
-  const eventStartTime = dayjs(startTime);
-  const eventEndTime = dayjs(endTime);
+  if (days > 0) {
+    parts.push(`${days}D`);
+    parts.push(`${String(hours).padStart(2, '0')}H`);
+    parts.push(`${String(minutes).padStart(2, '0')}M`);
+  } else if (hours > 0) {
+    parts.push(`${hours}H`);
+    parts.push(`${String(minutes).padStart(2, '0')}M`);
+  } else {
+    parts.push(`${minutes}M`);
+  }
 
-  const diffInMilliseconds = eventEndTime.diff(eventStartTime);
-  const durationObj = dayjs.duration(diffInMilliseconds);
-
-  const formattedDuration = formatDuration(durationObj);
-
-  return `${formattedDuration}`;
+  return parts.join(' ');
 }
 
 function isDatePresent(dueDate){
@@ -76,8 +82,8 @@ function isDateFuture(dueDate){
   return dueDate && dayjs(dueDate).isAfter(dayjs(), 'D');
 }
 
-function isDatePast(dueDate){
-  return dueDate && dayjs(dueDate).isBefore(dayjs(), 'D');
+function isDatePast(startDate, endDate){
+  return startDate && endDate && dayjs(startDate).isBefore(dayjs(), 'D') && dayjs(endDate).isBefore(dayjs(), 'D');
 }
 export {
   humanizeEventDate,
