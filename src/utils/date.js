@@ -60,11 +60,18 @@ function getEventTimeDuration(startTime, endTime) {
 function formatDuration(days, hours, minutes) {
   const parts = [];
 
-  if (days > 0) {
+  if (days > 0 && days < 10) {
+    parts.push(`0${days}D`);
+    parts.push(`${String(hours).padStart(2, '0')}H`);
+    parts.push(`${String(minutes).padStart(2, '0')}M`);
+  } else if (days > 10) {
     parts.push(`${days}D`);
     parts.push(`${String(hours).padStart(2, '0')}H`);
     parts.push(`${String(minutes).padStart(2, '0')}M`);
-  } else if (hours > 0) {
+  } else if (hours < 10) {
+    parts.push(`0${hours}H`);
+    parts.push(`${String(minutes).padStart(2, '0')}M`);
+  } else if (hours > 10) {
     parts.push(`${hours}H`);
     parts.push(`${String(minutes).padStart(2, '0')}M`);
   } else {

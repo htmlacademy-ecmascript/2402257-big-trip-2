@@ -387,10 +387,8 @@ export default class EditEventPointView extends AbstractStatefulView{
 
   #eventOffersHandler = (evt) => {
     if (evt.target.classList.contains('event__offer-checkbox')){
-
       if (this._state.offers.includes(evt.target.id)){
-        this._state.offers = this._state.offers.filter((offer) => offer !== +evt.target.id);
-
+        this._state.offers = this._state.offers.filter((offer) => offer !== evt.target.id);
       } else {
         this._state.offers.push(evt.target.id);
         this._setState({allOffers: this.#getOffersByType(this._state.type)});

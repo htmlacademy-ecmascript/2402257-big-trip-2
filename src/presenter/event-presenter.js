@@ -88,7 +88,7 @@ export default class EventPresenter {
     }
 
     this.#renderSortView();
-    this.#renderEventList();
+    this.renderEventList();
     this.#renderPoints();
   }
 
@@ -179,6 +179,7 @@ export default class EventPresenter {
   #clearEventList({ resetSortType = false } = {}) {
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
+    console.log('kek');
     this.#newPointPresenter.destroy();
 
     remove(this.#filterButtonsComponent);
@@ -221,7 +222,7 @@ export default class EventPresenter {
     render(this.#sortButtonsComponent, this.#eventListContainer);
   }
 
-  #renderEventList() {
+  renderEventList() {
     render(this.#eventListComponent, this.#eventListContainer);
   }
 

@@ -33,7 +33,7 @@ function checkIfValid(name, startTime, endTime, allDestinations, isDisabled) {
 
 function createOffersTemplate(title, price, id, name, checkStatus, isDisabled) {
   return ` <div class="event__offer-selector">
-              <input class="event__offer-checkbox  visually-hidden" id="${id}" type="checkbox" name="${name}" ${checkStatus}="" ${isDisabled ? 'disabled' : ''}>
+              <input class="event__offer-checkbox  visually-hidden" id="${id}" type="checkbox" name="${name}" ${checkStatus} ${isDisabled ? 'disabled' : ''}>
               <label class="event__offer-label" for="${id}">
                   <span class="event__offer-title">${title}</span>
                     +€&nbsp;
@@ -334,7 +334,7 @@ export default class AddEventPointView extends AbstractStatefulView{
     if (evt.target.classList.contains('event__offer-checkbox')){
 
       if (this._state.offers.includes(evt.target.id)){
-        this._state.offers = this._state.offers.filter((offer) => offer !== +evt.target.id);
+        this._state.offers = this._state.offers.filter((offer) => offer !== evt.target.id);
 
       } else {
         this._state.offers.push(evt.target.id);

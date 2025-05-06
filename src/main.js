@@ -6,7 +6,7 @@ import addNewEventButtonView from './view/add-new-event-btn-view.js';
 import { render } from './framework/render.js';
 import PointApiService from './point-api-service.js';
 
-const AUTHORIZATION = 'Basic hS2sfS44545hghgasasscsdcsdpodas';
+const AUTHORIZATION = 'Basic hS2sfS44545hghgasasscsas';
 const END_POINT = 'https://23.objects.htmlacademy.pro/big-trip';
 
 const filtersButtonsContainer = document.querySelector(
@@ -49,6 +49,7 @@ function handleNewPointFormClose() {
 }
 
 function handleNewPointButtonCLick() {
+  eventPresenter.renderEventList();
   eventPresenter.createPoint();
   eventPresenter.removeNoEventPointComponent();
   AddPointButtonComponent.element.disabled = true;
