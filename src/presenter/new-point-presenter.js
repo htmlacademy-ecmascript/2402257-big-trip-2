@@ -33,9 +33,7 @@ export default class NewPointPresenter {
       allTypesOffers: allTypesOffers,
       allTypes: allTypes,
     });
-    console.log(this.#pointListContainer);
     render(this.#addEventPointComponent,this.#pointListContainer,RenderPosition.AFTERBEGIN);
-    console.log('lol')
     document.addEventListener('keydown', this.#escKeyDownHandler);
   }
 
