@@ -179,7 +179,6 @@ export default class EventPresenter {
   #clearEventList({ resetSortType = false } = {}) {
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
-    console.log('kek');
     this.#newPointPresenter.destroy();
 
     remove(this.#filterButtonsComponent);
