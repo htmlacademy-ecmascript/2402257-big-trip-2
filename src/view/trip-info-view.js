@@ -79,6 +79,7 @@ export default class TripInfoView extends AbstractView{
   }
 
   get template() {
+    console.log(this.#points)
     return createTripInfoTemplate(this.#points, this.#destinations);
   }
 }

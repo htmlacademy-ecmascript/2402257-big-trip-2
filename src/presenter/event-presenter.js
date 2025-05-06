@@ -65,6 +65,7 @@ export default class EventPresenter {
       case SortType.PRICE:
         return filteredPoints.sort(sortPointPrice);
     }
+    console.log(filter)
     return filteredPoints;
   }
 

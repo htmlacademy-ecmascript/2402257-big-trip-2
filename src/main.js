@@ -38,6 +38,8 @@ const eventPresenter = new EventPresenter({
 const tripInfoPresenter = new TripInfoPresenter({
   tripInfoContainer: addPointButtonContainer,
   pointModel,
+  points: eventPresenter.points,
+  filterModel,
 });
 
 const filterPresenter = new FilterPresenter({
