@@ -7,7 +7,8 @@ import addNewEventButtonView from './view/add-new-event-btn-view.js';
 import { render } from './framework/render.js';
 import PointApiService from './point-api-service.js';
 
-const AUTHORIZATION = 'Basic hS2sS44545hghgaassashvhhvsassd';
+const AUTHORIZATION = 'Basic hS2sS4454556hhvkkkksassd';
+//'Basic hS2sS4454556hhvsassd'
 const END_POINT = 'https://23.objects.htmlacademy.pro/big-trip';
 
 const filtersButtonsContainer = document.querySelector(
@@ -27,7 +28,6 @@ const pointModel = new PointsModel(
 );
 const filterModel = new FilterModel();
 
-
 const eventPresenter = new EventPresenter({
   listContainer: eventsContainer,
   pointModel,
@@ -35,11 +35,10 @@ const eventPresenter = new EventPresenter({
   onNewPointDestroy: handleNewPointFormClose,
 });
 
-const tripInfoPresenter = new TripInfoPresenter({
+new TripInfoPresenter({
   tripInfoContainer: addPointButtonContainer,
   pointModel,
-  points: eventPresenter.points,
-  filterModel,
+  filterModel
 });
 
 const filterPresenter = new FilterPresenter({
@@ -66,7 +65,6 @@ function handleNewPointButtonCLick() {
 
 
 filterPresenter.init();
-tripInfoPresenter.init();
 eventPresenter.init();
 pointModel.init()
   .finally(() => {

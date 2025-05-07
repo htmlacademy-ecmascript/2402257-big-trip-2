@@ -2,7 +2,7 @@ import AbstractView from '../framework/view/abstract-view.js';
 import {
   humanizeEventDate,
 } from '../utils/date.js';
-
+import { sortPointDay, sortPointDayEnd } from '../utils/sort.js';
 
 function getRouteNames(points, destinations) {
 
@@ -29,20 +29,20 @@ function getRouteNames(points, destinations) {
 }
 
 function getRouteDateDuration(points){
-
-  const eventStartDate = humanizeEventDate(points[0].startTime);
-  let eventEndDate = humanizeEventDate(points[points.length - 1].endTime);
+  const firstDate = [...points.sort(sortPointDay)][0].startTime;
+  const lastDate = [...points.sort(sortPointDayEnd)][points.length - 1].endTime;
+  const eventStartDate = humanizeEventDate(firstDate);
+  let eventEndDate = humanizeEventDate(lastDate);
 
   if (points.length > 1){
     return `<p class="trip-info__dates">${eventStartDate} — ${eventEndDate}</p>`;
   } else {
-    eventEndDate = humanizeEventDate(points[0].endTime);
+    eventEndDate = humanizeEventDate(lastDate);
     return `<p class="trip-info__dates">${eventStartDate} — ${eventEndDate}</p>`;
   }
 }
 
 function createTripMainInfoTemplate(points, destinations){
-
   if (points.length === 0){
     return '';
   }
@@ -54,16 +54,36 @@ function createTripMainInfoTemplate(points, destinations){
               </div>`;
 }
 
-function createPriceTemplate(){
+function createPriceTemplate(points, offers){
+  if (points.length === 0){
+    return '';
+  }
+
+  let totalPrice = 0;
+  const allOffers = [];
+  const allSelectedOffers = [];
+  offers.map((offer) => allOffers.push(...offer.offers));
+  points.map((point) => {
+    allSelectedOffers.push(...point.offers);
+    totalPrice += point.price;
+  });
+  allSelectedOffers.map((selectedOffer) => {
+    allOffers.map((offer) => {
+      if (offer.id === selectedOffer){
+        totalPrice += offer.price;
+      }
+    });
+  });
+
   return `<p class="trip-info__cost">
-              Total: €&nbsp;<span class="trip-info__cost-value">1230</span>
+              Total: €&nbsp;<span class="trip-info__cost-value">${totalPrice}</span>
               </p>`;
 }
 
-function createTripInfoTemplate(points, destinations) {
+function createTripInfoTemplate(points, destinations, offers) {
   return `<section class="trip-main__trip-info  trip-info">
             ${createTripMainInfoTemplate(points, destinations)}
-            ${createPriceTemplate()}
+            ${createPriceTemplate(points, offers)}
             </section>`;
 }
 
@@ -71,15 +91,15 @@ export default class TripInfoView extends AbstractView{
 
   #points = null;
   #destinations = null;
-
-  constructor({points, destinations}){
+  #offers = null;
+  constructor({points, destinations, allOffers}){
     super();
     this.#points = points;
     this.#destinations = destinations;
+    this.#offers = allOffers;
   }
 
   get template() {
-    console.log(this.#points)
-    return createTripInfoTemplate(this.#points, this.#destinations);
+    return createTripInfoTemplate(this.#points, this.#destinations, this.#offers);
   }
 }
