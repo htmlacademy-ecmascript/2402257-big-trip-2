@@ -16,6 +16,22 @@ function getWeightForNullStartDate(dateA, dateB) {
   return null;
 }
 
+function getWeightForNullEndDate(dateA, dateB) {
+  if (dateA === null && dateB === null) {
+    return 0;
+  }
+
+  if (dateA === null) {
+    return -1;
+  }
+
+  if (dateB === null) {
+    return 1;
+  }
+
+  return null;
+}
+
 function getEventTimeDuration({startTime, endTime}){
   const start = dayjs(startTime);
   const end = dayjs(endTime);
@@ -30,6 +46,12 @@ function sortPointDay(pointA, pointB) {
   return weight ?? dayjs(pointA.startTime).diff(dayjs(pointB.startTime));
 }
 
+function sortPointDayEnd(pointA, pointB) {
+  const weight = getWeightForNullEndDate(pointA.endTime, pointB.endTime);
+
+  return weight ?? dayjs(pointA.endTime).diff(dayjs(pointB.endTime));
+}
+
 function sortPointTime(pointA, pointB) {
   const durationA = getEventTimeDuration(pointA);
   const durationB = getEventTimeDuration(pointB);
@@ -41,4 +63,4 @@ function sortPointPrice(pointA, pointB) {
   return pointB.price - pointA.price;
 }
 
-export { sortPointDay, sortPointPrice, sortPointTime };
+export { sortPointDay, sortPointPrice, sortPointTime, sortPointDayEnd };

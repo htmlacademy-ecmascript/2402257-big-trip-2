@@ -1,17 +1,21 @@
 
 import Observable from '../framework/observable.js';
 import {UpdateType} from '../const.js';
-
+import FailedToLoadView from '../view/failed-to-load-view.js';
+import { render } from '../framework/render.js';
 export default class PointsModel extends Observable{
   #points = [];
   #pointsApiService = null;
+  #failedToLoadComponent = new FailedToLoadView();
+  #failedToLoadContainer = null;
   destinations = null;
   types = null;
   offers = null;
 
-  constructor({pointsApiService}){
+  constructor({pointsApiService, failedToLoadContainer}){
     super();
     this.#pointsApiService = pointsApiService;
+    this.#failedToLoadContainer = failedToLoadContainer;
 
   }
 
@@ -43,7 +47,8 @@ export default class PointsModel extends Observable{
       this.#points = points.map(this.#adaptToClient);
       this.types = this.offers.map((offer) => offer.type);
     } catch(err) {
-      this.#points = [];
+      render(this.#failedToLoadComponent, this.#failedToLoadContainer);
+      this.#points = null;
     }
     this._notify(UpdateType.INIT);
   }

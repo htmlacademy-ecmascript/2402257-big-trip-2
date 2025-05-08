@@ -1,25 +1,40 @@
+import {render, replace, remove} from '../framework/render.js';
 import TripInfoView from '../view/trip-info-view.js';
-import { render, replace, remove } from '../framework/render.js';
+import { RenderPosition } from '../framework/render.js';
+import { FilterType } from '../const.js';
+import { filter } from '../utils/filter.js';
+import { sortPointDay } from '../utils/sort.js';
 
 export default class TripInfoPresenter {
   #tripInfoContainer = null;
+  #pointModel = null;
   #tripInfoComponent = null;
-  constructor({tripInfoContainer, pointModel, points}){
+  #filterModel = null;
+  #filterType = FilterType.EVERYTHING;
+
+  constructor({tripInfoContainer, pointModel, filterModel}) {
     this.#tripInfoContainer = tripInfoContainer;
-    this.points = points;
-    this.pointModel = pointModel;
+    this.#pointModel = pointModel;
+    this.#filterModel = filterModel;
+
+    this.#pointModel.addObserver(this.#handleModelEvents);
   }
 
 
-  init(){
+  init() {
+    this.#filterType = this.#filterModel.filter;
+    const filteredPoints = filter[this.#filterType](this.#pointModel.getPoints()).sort(sortPointDay);
 
     const prevTripInfoComponent = this.#tripInfoComponent;
-    this.#tripInfoComponent = new TripInfoView({
-      points: this.points
+
+    this.#tripInfoComponent = new TripInfoView ({
+      points: filteredPoints,
+      destinations: this.#pointModel.getDestinations(),
+      allOffers: this.#pointModel.getOffers(),
     });
 
-    if (prevTripInfoComponent === null) {
-      render(this.#tripInfoComponent, this.#tripInfoContainer);
+    if (prevTripInfoComponent === null){
+      render(this.#tripInfoComponent, this.#tripInfoContainer, RenderPosition.AFTERBEGIN);
       return;
     }
 
@@ -27,8 +42,8 @@ export default class TripInfoPresenter {
     remove(prevTripInfoComponent);
   }
 
-  #handelPointsChange(){
+  #handleModelEvents = () => {
     this.init();
-  }
+  };
 
 }

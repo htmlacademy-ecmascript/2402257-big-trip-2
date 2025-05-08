@@ -31,6 +31,7 @@ export default class EventPresenter {
   #newPointPresenter = null;
   #loadingComponent = new LoadingView();
   #isLoading = true;
+
   #uiBlocker = new UiBlocker({
     lowerLimit: TimeLimit.LOWER_LIMIT,
     upperLimit: TimeLimit.UPPER_LIMIT
@@ -77,13 +78,17 @@ export default class EventPresenter {
       this.#renderLoading();
       return;
     }
+    if (this.#pointModel.getPoints() === null){
+      return;
+    }
+
     if (this.points.length === 0) {
       this.#renderNoEventPointView();
       return;
     }
 
     this.#renderSortView();
-    this.#renderEventList();
+    this.renderEventList();
     this.#renderPoints();
   }
 
@@ -99,6 +104,10 @@ export default class EventPresenter {
     pointPresenter.init(point);
 
     this.#pointPresenters.set(point.id, pointPresenter);
+  }
+
+  removeNoEventPointComponent (){
+    remove(this.#noEventPointComponent);
   }
 
   #renderPoints() {
@@ -121,7 +130,6 @@ export default class EventPresenter {
         break;
       case UserAction.ADD_POINT:
         this.#newPointPresenter.setSaving();
-        this.#pointModel.addPoint(updateType, update);
         try {
           await this.#pointModel.addPoint(updateType, update);
         } catch(err) {
@@ -151,7 +159,7 @@ export default class EventPresenter {
         this.#renderApp();
         break;
       case UpdateType.MAJOR:
-        this.#clearEventList({ resetSortType: false });
+        this.#clearEventList({ resetSortType: true });
         this.#renderApp();
         break;
       case UpdateType.INIT:
@@ -213,7 +221,7 @@ export default class EventPresenter {
     render(this.#sortButtonsComponent, this.#eventListContainer);
   }
 
-  #renderEventList() {
+  renderEventList() {
     render(this.#eventListComponent, this.#eventListContainer);
   }
 
