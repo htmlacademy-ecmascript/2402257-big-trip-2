@@ -21,13 +21,21 @@ function checkIfValid(name, startTime, endTime, allDestinations, isDisabled) {
 
 function createOffersTemplate(title, price, id, name, checkStatus, isDisabled) {
   return ` <div class="event__offer-selector">
-              <input class="event__offer-checkbox  visually-hidden" id="${id}" type="checkbox" name="${name}" ${checkStatus} ${isDisabled ? 'disabled' : ''}>
-              <label class="event__offer-label" for="${id}">
-                  <span class="event__offer-title">${title}</span>
-                    +€&nbsp;
-                  <span class="event__offer-price">${price}</span>
-              </label>
-            </div>`;
+      <input
+        id="${id}"
+        class="event__offer-checkbox  visually-hidden"
+        type="checkbox"
+        name="${name}"
+        data-offer-id="${id}"
+        value="${title}"
+        ${checkStatus}
+        ${isDisabled ? 'disabled' : ''}>
+      <label class="event__offer-label" for="${id}">
+        <span class="event__offer-title">${title}</span>
+        &plus;&euro;&nbsp;
+        <span class="event__offer-price">${price}</span>
+      </label>
+    </div>`;
 }
 
 function createDescriptionPictureTemplate(src, description){
@@ -36,9 +44,10 @@ function createDescriptionPictureTemplate(src, description){
 
 }
 
-function createEventTypeItemTemplate(pointType){
+function createEventTypeItemTemplate(pointType, currentType){
+
   return ` <div class="event__type-item">
-                          <input id="event-type-${pointType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${pointType}">
+                          <input id="event-type-${pointType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${pointType}" ${currentType === pointType ? 'checked' : ''}>
                           <label class="event__type-label  event__type-label--${pointType}" for="event-type-${pointType}-1">${capitalizeFirstLetter(pointType)}</label>
                         </div>`;
 }
@@ -60,14 +69,14 @@ function initDestinationListOptions(allDestinations){
     .join('');
 }
 
-function initEventTypesItemTemplate(allTypes){
+function initEventTypesItemTemplate(allTypes, currentType){
 
   if (!allTypes || allTypes.length === 0) {
     return '';
   }
 
   return allTypes
-    .map((type) => createEventTypeItemTemplate(type))
+    .map((type) => createEventTypeItemTemplate(type, currentType))
     .join('');
 }
 
@@ -135,7 +144,7 @@ function createEditPointTemplate({type, startTime, endTime, price , allOffers, c
                     <div class="event__type-list">
                       <fieldset class="event__type-group">
                         <legend class="visually-hidden">Event type</legend>
-                          ${initEventTypesItemTemplate(allTypes)}
+                          ${initEventTypesItemTemplate(allTypes, type)}
                       </fieldset>
                     </div>
                   </div>
@@ -146,7 +155,7 @@ function createEditPointTemplate({type, startTime, endTime, price , allOffers, c
                     </label>
                     <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(destinationInfo.name)}" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
                     <datalist id="destination-list-1">
-                      ${initDestinationListOptions(allDestinations)}
+                      ${initDestinationListOptions(allDestinations, type)}
                     </datalist>
                   </div>
 
@@ -391,8 +400,7 @@ export default class EditEventPointView extends AbstractStatefulView{
         this._state.offers = this._state.offers.filter((offer) => offer !== evt.target.id);
       } else {
         this._state.offers.push(evt.target.id);
-        this._setState({allOffers: this.#getOffersByType(this._state.type)});
-        this._setState({checkedOffers: this._state.allOffers.filter((offer) => this._state.offers.includes(offer.id))});
+        this.updateElement({checkedOffers: this._state.allOffers.filter((offer) => this._state.offers.includes(offer.id)), allOffers: this.#getOffersByType(this._state.type)});
       }
     }
   };
