@@ -1,4 +1,3 @@
-const EVENT_TYPES = ['taxi', 'flight', 'train', 'ship', 'drive', 'check-in', 'sightseeing', 'restaurant'];
 
 const FilterType = {
   EVERYTHING: 'everything',
@@ -27,4 +26,4 @@ const UpdateType = {
 };
 
 
-export { EVENT_TYPES, FilterType, SortType, UserAction, UpdateType };
+export { FilterType, SortType, UserAction, UpdateType };

@@ -1,7 +1,7 @@
 import PointPresenter from './point-presenter.js';
 import EventListView from '../view/event-list-view';
 import { render, remove } from '../framework/render.js';
-import SortButtonsView from '../view/sort-view.js';
+import SortButtonsView from '../view/sort-buttons-view.js';
 import NoEventPointView from '../view/no-event-point-view.js';
 import { SortType } from '../const.js';
 import { sortPointPrice, sortPointDay, sortPointTime } from '../utils/sort.js';
@@ -151,7 +151,6 @@ export default class EventPresenter {
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
-        // - обновить часть списка (например, когда поменялось описание)
         this.#pointPresenters.get(data.id).init(data);
         break;
       case UpdateType.MINOR:

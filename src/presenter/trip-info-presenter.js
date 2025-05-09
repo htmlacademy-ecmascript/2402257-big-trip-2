@@ -22,6 +22,11 @@ export default class TripInfoPresenter {
 
 
   init() {
+
+    if (this.#pointModel.getPoints() === null){
+      return;
+    }
+
     this.#filterType = this.#filterModel.filter;
     const filteredPoints = filter[this.#filterType](this.#pointModel.getPoints()).sort(sortPointDay);
 
