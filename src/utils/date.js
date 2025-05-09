@@ -9,9 +9,6 @@ const DATE_FORMAT_POINT = 'MMM D';
 const DATE_FORMAT_EDIT_POINT = 'DD/MM/YY';
 const TIME_FORMAT = 'HH:mm';
 
-function getRandomInteger(maxLimit = 10000) {
-  return Math.floor(Math.random() * maxLimit);
-}
 
 function humanizeEventDate(dueDate) {
   return dueDate ? dayjs(dueDate).format(DATE_FORMAT_POINT) : '';
@@ -25,20 +22,13 @@ function localizeDateFormat(dueDate){
   return dueDate ? `${dayjs(dueDate).format(DATE_FORMAT_EDIT_POINT)} ${dayjs(dueDate).format(TIME_FORMAT)}` : '';
 }
 
-function capitalizeFirstLetter(str) {
-  if (!str) {
-    return str;
+function capitalizeFirstLetter(name) {
+  if (!name) {
+    return name;
   }
-  return str.charAt(0).toUpperCase() + str.slice(1);
+  return name.charAt(0).toUpperCase() + name.slice(1);
 }
 
-function firstLetterToLowerCase(str) {
-  if (!str || typeof str !== 'string') {
-    return str; // возвращаем как есть, если не строка или пустая
-  }
-
-  return str.charAt(0).toLowerCase() + str.slice(1);
-}
 
 function getEventTimeDuration(startTime, endTime) {
   const start = dayjs(startTime, 'DD/MM/YY HH:mm');
@@ -94,13 +84,11 @@ function isDatePast(startDate, endDate){
 }
 export {
   humanizeEventDate,
-  getRandomInteger,
   humanizeEventTime,
   capitalizeFirstLetter,
   localizeDateFormat,
   getEventTimeDuration,
   isDatePresent,
   isDateFuture,
-  firstLetterToLowerCase,
   isDatePast
 };

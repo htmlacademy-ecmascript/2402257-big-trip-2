@@ -198,7 +198,6 @@ export default class PointPresenter {
         }
     }
     this.#handleDataChange(UserAction.UPDATE_POINT, isPatchUpdate, state);
-    //this.#replaceEditPointToPoint();
   };
 
   #handleFavoriteClick = () => {

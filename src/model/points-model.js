@@ -8,14 +8,16 @@ export default class PointsModel extends Observable{
   #pointsApiService = null;
   #failedToLoadComponent = new FailedToLoadView();
   #failedToLoadContainer = null;
+  #addPointButtonComponent = null;
   destinations = null;
   types = null;
   offers = null;
 
-  constructor({pointsApiService, failedToLoadContainer}){
+  constructor({pointsApiService, failedToLoadContainer, addPointButtonComponent}){
     super();
     this.#pointsApiService = pointsApiService;
     this.#failedToLoadContainer = failedToLoadContainer;
+    this.#addPointButtonComponent = addPointButtonComponent;
 
   }
 
@@ -28,7 +30,7 @@ export default class PointsModel extends Observable{
       isFavorite: point['is_favorite'],
     };
 
-    // Ненужные ключи мы удаляем
+
     delete adaptedPoint['date_from'];
     delete adaptedPoint['date_to'];
     delete adaptedPoint['is_favorite'];
@@ -48,6 +50,7 @@ export default class PointsModel extends Observable{
       this.types = this.offers.map((offer) => offer.type);
     } catch(err) {
       render(this.#failedToLoadComponent, this.#failedToLoadContainer);
+      this.#addPointButtonComponent.element.disabled = true;
       this.#points = null;
     }
     this._notify(UpdateType.INIT);
@@ -79,7 +82,6 @@ export default class PointsModel extends Observable{
   getOffersById(type, pointsId){
 
     const offersType = this.getOffersByType(type);
-    //console.log(offersType); тут проверяю что правильно приходит массив с оферами
     const offersById = [];
     offersType.forEach((typedOffer) => {
 
@@ -89,7 +91,7 @@ export default class PointsModel extends Observable{
       }
 
     });
-    //console.log(offersById); тут проверяю отсортированный массив
+
     return offersById;
   }
 
